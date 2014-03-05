@@ -1,29 +1,57 @@
-<head>
-	<link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-</head>
-<body>
+<template name="layout">
+	<table id="layout">
+		<tr>
+			<td>
+				{{> header}}
+			</td>
+			<td rowspan="3">
+				{{> calendar}}
+			</td>
+		</tr>
+		<tr>	
+			<td>
+				{{> tools}}
+			</td>
+		</tr>
+		<tr>
+			<td>
+				{{> tags}}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				{{> say}}
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				{{yield 'dataBefore'}}
+				{{yield}}
+				{{yield 'dataAfter'}}
+			</td>
+		</tr>
+	</table>
+</template>
 
-	{{loginButtons align="right"}}
-	{{> sessions}}
-	{{> tools}}
-	{{> tags}}
-	{{> say}}
-	{{> clientCard}}
-	{{> phrases}}
-	{{> clients}}
-	{{> calendar}}
-</body>
+
+
+
 <template name="phrases">
 	<div id="phrases">
 		{{#each phrase}}
 		{{{daySplitter added}}}
-		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}<img src="remove.png"/></span>{{/each}}</div>
+		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}<img src="../remove.png"/></span>{{/each}}</div>
 		{{/each}}
 	</div>
 </template>
 
 <template name="clients">
 	<input id="clients"/>
+	<div class="clients">
+		{{#each client}}
+		<div id="{{_id}}">{{workName}}</div>
+		{{/each}}
+	</div>
 </template>
 
 <template name="fileUpload">
@@ -38,27 +66,23 @@
 		<a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">×</a>
 	</div>
 </template>
-<template name="clientCard">
-<div id="#clientCard">
-{{#each client}}
-	<div>{{name}}</div>
-	<div>{{web}}</div>
-	<div>{{legal}}</div>
-	<div>
-		{{#each contacts}}
-		{{name}}
-		{{/each}}
+<template name="client">
+	<div class=".clientCard">
+		{{client.ID}}
+		<div>{{client.workName}}</div>
+		<div>{{client.web}}</div>
+		<div>{{client.legal}}</div>
+		{{> contacts}}
+		<div>{{client.carsTotal}}</div>
+		<div>{{client.carsEquiped}}</div>
+		<div>{{client.carsTypes}}</div>
+		<div>{{client.installedEquipment}}</div>
+		<div>{{client.fuelPrincipe}}</div>
+		<div>{{client.buyingSchema}}</div>
+		<div>{{client.competitors}}</div>
 	</div>
-	<div>{{carsTotal}}</div>
-	<div>{{carsEquiped}}</div>
-	<div>{{carsTypes}}</div>
-	<div>{{installedEquipment}}</div>
-	<div>{{fuelPrincipe}}</div>
-	<div>{{buyingSchema}}</div>
-	<div>{{competitors}}</div>
-	{{/each}}
-</div>
 </template>
+
 <template name="tags">
 	<div id="tags">
 		{{#each tags}}
@@ -67,6 +91,7 @@
 		<div contenteditable id="addTag"></div>
 	</div>
 </template>
+
 <template name="sessions">
 	<div>Session: {{info}}</div>
 </template>
@@ -77,39 +102,38 @@
 
 <template name="tools">
 	<div id="tools">
-		<img id="search" selectStart=1 selectEnd=1 alt="Поиск" text="" src="search.png"/>
-		<img id="clear" selectStart=1 selectEnd=1 alt="Стереть" text="" src="delete.png"/>
-		<img selectStart=30 selectEnd=34 alt="Звонок" text="Осуществлен #звонок# клиенту #.....# на тему:. Результат:" src="call.png"/>
-		<img selectStart=27 selectEnd=31 alt="Встреча" text="Была #встреча# с клиентом #....#. Тема встречи:....... Задачи" src="meeting.png"/>
-		<img selectStart=1 selectEnd=5 alt="Презентация" text="Выполнена #презентация# клиенту #....#. В ходе презентации выявлены следующие потребности....... Дальнейшие действия......." src="presentation.png"/>
-		<img selectStart=1 selectEnd=8 alt="Заметка" text="#Заметка# по клиенту #....# "src="notes.png"/>
-		<img selectStart=12 selectEnd=17 alt="Напомнить" text="#Напомнить# когда о " src="remind.png"/>
-		<img selectStart=1 selectEnd=9 alt="Делегировать" text="#Поручить# задачу" src="delegate.png"/>
-		<img id="bin" selectStart=1 selectEnd=1 alt="В корзину" text="" src="bin.png"/>
-		<img id="books" selectStart=1 selectEnd=1 alt="В корзину" text="" src="thisMonth.png"/>
-		<img id="enter" selectStart=1 selectEnd=1 alt="В корзину" text="" src="enter.png"/>
+		<a href="{{pathFor 'home'}}"><img selectStart=1 selectEnd=1 alt="Поиск" text="" src="../home.png"/></a>
+		<img id="search" selectStart=1 selectEnd=1 alt="Поиск" text="" src="../search.png"/>
+		<img id="clear" selectStart=1 selectEnd=1 alt="Стереть" text="" src="../delete.png"/>
+		<img selectStart=30 selectEnd=34 alt="Звонок" text="Осуществлен #звонок# клиенту #.....# на тему:. Результат:" src="../call.png"/>
+		<img selectStart=27 selectEnd=31 alt="Встреча" text="Была #встреча# с клиентом #....#. Тема встречи:....... Задачи" src="../meeting.png"/>
+		<img selectStart=1 selectEnd=5 alt="Презентация" text="Выполнена #презентация# клиенту #....#. В ходе презентации выявлены следующие потребности....... Дальнейшие действия......." src="../presentation.png"/>
+		<img selectStart=1 selectEnd=8 alt="Заметка" text="#Заметка# по клиенту #....# "src="../notes.png"/>
+		<img selectStart=12 selectEnd=17 alt="Напомнить" text="#Напомнить# когда о " src="../remind.png"/>
+		<img selectStart=1 selectEnd=9 alt="Делегировать" text="#Поручить# задачу" src="../delegate.png"/>
+		<a href="{{pathFor 'clients'}}"><img id="clientsIcon" src="../clients.png"/></a>
+		<img selectStart=1 selectEnd=1 alt="В корзину" text="" src="../attachment.png"/>
+		<img id="bin" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../bin.png"/>
+		<img id="books" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../thisMonth.png"/>
+		<img id="enter" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../enter.png"/>
 	</div>
 </template>
 <template name="calendar">
 	<div id="calendar">
 		{{#each cells}}
-		<div data="{{this}}" class=""></div>
+		<div data="{{this}}" class="">{{this}}</div>
 		{{/each}}
 	</div>
 </template>
 
-<template name="layout">
-  {{yield}}
+
+<template name="contacts">
+	{{#each contact}}
+	{{fio}}
+	{{/each}}
 </template>
 
-<template name="posts">
-  Posts
-</template>
 
-<template name="post">
-  Post
-</template>
-
-<template name="home">
-  Home
+<template name="header">
+	<h2>{{where}}</h2>
 </template>

@@ -8,3 +8,6 @@ autopublish
 insecure
 preserve-inputs
 iron-router
+accounts-password
+accounts-base
+accounts-ui

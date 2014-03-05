@@ -39,25 +39,49 @@ Template.phrases.rendered=function(){
 		}
 	});
 	$("#phrases div").draggable({
-			helper: "clone"
+		helper: "clone"
 	});
 
 };
 Template.phrases.phrase=function(){
-	if (Session.get("tags")&&!Session.get("query")){
+	if (Session.get("tags").length>0&&!Session.get("query")){
 		return Phrases.find({tags: {$all : Session.get("tags")||[]}},{sort: {added : -1}});
 	}
 	else if (Session.get("query")){
 		return Phrases.find({name : {$regex : Session.get("query") },tags: {$all : Session.get("tags")||[]}},{sort: {added : -1}});
 	}
+	else if  (Session.get("clientID")){
+		return Phrases.find({clientID: Session.get("clientID")},{sort: {added : -1}});
+	}
 	else{
 		return Phrases.find({},{sort: {added : -1}});
 	}
 };
+Template.header.where=function(){
+	return Session.get("where");
+}
+
 
 Template.clients.rendered=function(){
 	$("#clients").autocomplete({source : Clients.find().fetch()});
 };
+
+Template.clients.client=function(){
+	return Clients.find({},{sort: {workName : 1}});
+};
+Template.clients.events({
+	'click .clients div' : function() {
+		cid=$(event.currentTarget)[0].id;
+		Router.go('client',{id : cid});
+
+	}
+});
+
+Template.client.client=function(){
+	return Clients.findOne({_id : Session.get("clientID")});
+};
+
+
 Template.phrases.events({
 	'click #phrases div': function(event){
 		id=$(event.currentTarget)[0].id;
@@ -71,9 +95,49 @@ Template.phrases.events({
 		}
 	});
 
-Template.clientCard.client=function(){
-	return Clients.find({_id: "4t4gzdAFzwSdRpeWR"});
-}
+Template.say.events({
+	'keyup #say': function(e) {
+		say=$(e.currentTarget).val();
+		if(e.which == 13) {
+			if (Session.equals("enter",1)){
+				dt=jsParseDate(say);
+				Phrases.insert({name: say.replace("\n\n",""), added: Date.now(), date: dt.date.toLocaleString(), tags : [], clientID: Session.get("clientID")},function(er,id){
+					$("#say").val("");
+					r=/#(.+?)#/g;
+					if (say.replace("\n\n","").match(r)){
+						say.replace("\n\n","").match(r).forEach(function(e){
+							Meteor.apply("applyTag",[id,e.replace(/#/g,"")]);
+							if (Tags.find({name: e.replace(/#/g,"")}).count()==0){
+								Tags.insert({name: e.replace(/#/g,"")});
+							}
+						});
+					}
+
+					Session.set("enter",0);
+				});
+				
+			}
+			else{
+				Session.set("enter",1);
+			}	
+		}
+		else if (e.which == 32){
+			if (Session.equals("space",1)){
+				alert ("dd");
+			}
+			else{
+				Session.set("space",1);
+			}	
+		}
+		else if (Session.get("searchMode")){
+			Session.set("query",$("#say").val());
+		}
+		else {
+			Session.set("enter",0);
+			Session.set("space",0);
+		}
+	}
+});
 Template.fileUpload.events({
 	"change .file-upload-input": function(event, template){
 		var func = this;
@@ -94,6 +158,10 @@ Template.sessions.info=function(){
 };
 
 Template.tools.events({
+	
+	'click clientsIcon': function(){
+		Router.go('clients');
+	},
 	'click img': function(){
 		$("#say").val($(event.currentTarget).attr("text"));
 		$("#say").selectRange($(event.currentTarget).attr("selectStart"),$(event.currentTarget).attr("selectEnd"));
@@ -124,8 +192,8 @@ Template.tools.rendered=function(){
 
 };
 Template.calendar.cells=function(){
- var foo = []; for (var i = 1; i <= 35; i++) { foo.push(i); }
- return foo;
+	var foo = []; for (var i = 1; i <= 35; i++) { foo.push(i); }
+	return foo;
 };
 Handlebars.registerHelper('daySplitter', function(added) {
 	addedDate=Date(added).toLocaleString();
@@ -161,6 +229,6 @@ Handlebars.registerHelper('isTagSelected', function(tagName) {
 Handlebars.registerHelper('searchMode', function() {
 	return new Handlebars.SafeString(
 
-			Session.get("searchMode")?"class='search'":""
-			);
+		Session.get("searchMode")?"class='search'":""
+		);
 });
