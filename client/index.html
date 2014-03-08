@@ -13,14 +13,17 @@
 				{{> tools}}
 			</td>
 		</tr>
+		
 		<tr>
-			<td>
-				{{> tags}}
+			<td colspan="2">
+				{{yield 'sayBefore'}}
+				{{> say}}
+				{{yield 'sayAfter'}}
 			</td>
 		</tr>
 		<tr>
-			<td colspan="2">
-				{{> say}}
+			<td>
+				{{yield 'tags'}}
 			</td>
 		</tr>
 		<tr>
@@ -39,7 +42,9 @@
 <template name="phrases">
 	<div id="phrases">
 		{{#each phrase}}
-		{{{daySplitter added}}}
+		{{#constant}}
+			{{{daySplitter added}}}
+		{{/constant}}
 		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}<img src="../remove.png"/></span>{{/each}}</div>
 		{{/each}}
 	</div>
@@ -68,7 +73,6 @@
 </template>
 <template name="client">
 	<div class=".clientCard">
-		{{client.ID}}
 		<div>{{client.workName}}</div>
 		<div>{{client.web}}</div>
 		<div>{{client.legal}}</div>
@@ -121,16 +125,37 @@
 <template name="calendar">
 	<div id="calendar">
 		{{#each cells}}
-		<div data="{{this}}" class="">{{this}}</div>
+			<span data="{{this.displayDate}}" class="{{this.month}}" count={{this.c}}>{{this.day}}</span>
 		{{/each}}
 	</div>
 </template>
 
 
 <template name="contacts">
+	<table>
+	<tr>
+		<td>Должность</td>
+		<td>Фамилия</td>
+		<td>Адрес</td>
+		<td>Телефоны</td>
+		<td>Email</td>
+		<td>Примечение</td>
+		<td>Обязанности</td>
+		<td>День рождения</td>
+	</tr>
 	{{#each contact}}
-	{{fio}}
+	<tr>
+		<td>{{this.position}}</td>
+		<td>{{fio}}</td>
+		<td>{{address}}</td>
+		<td>{{phones}}</td>
+		<td>{{email}}</td>
+		<td>{{comments}}</td>
+		<td>{{zone}}</td>
+		<td>{{birthday}}</td>
+	</tr>
 	{{/each}}
+	</table>
 </template>
 
 

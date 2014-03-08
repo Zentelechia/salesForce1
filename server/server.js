@@ -28,5 +28,8 @@ Meteor.methods({
     },
     clearPhrases: function(){
     	$(Phrases.find().fetch()).each(function(e,i){Phrases.remove({_id:this._id})});
+    },
+    insertPhrases: function(){
+        $(Phrases.find().fetch()).each(function(e,i){Phrases.remove({_id:this._id})});
     }
 });

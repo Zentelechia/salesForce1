@@ -19,11 +19,19 @@ body{
 	width: 200px;
 	background-color: #CCC;
 }
-#calendar div{
+.current{
+		background-color: #AAA;
+}
+.previous{
+		background-color: #EEE;
+}
+.next{
+		background-color: #EEE;
+}
+#calendar span{
 	text-align: center;
 	color: white;
 	font-size: 8px;
-	vertical-align: middle;
 	margin: 0px;
 }
 #phrases{
@@ -80,7 +88,7 @@ body{
 }
 #calendar {
 	width: 140px;
-	height: 100px;
+	height: 120px;
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
@@ -88,7 +96,7 @@ body{
 	top: 0px;
 	right: 0px;
 }
-#calendar div{
+#calendar span{
 	float: left;
 	margin: 0px;
 	display: inline-block;
@@ -96,5 +104,5 @@ body{
 	height: 18px;
 	border: 1px solid #EEE;
 	overflow: hidden;
-	background-color: green;
+
 }

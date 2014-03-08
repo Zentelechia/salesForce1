@@ -7,6 +7,9 @@ Router.map(function ()  	{
 	this.route('home', {
 		path: '/',
 		template: 'phrases',
+		yieldTemplates: {
+    	  'tags' : {to: 'tags'}
+	    },
 		before : function(){
 			init();
 			Session.set("where","Все записи");
@@ -16,13 +19,14 @@ Router.map(function ()  	{
 
 	this.route('client', {
 		path: '/client/:id',
-		template: 'client',
+		template: 'phrases',
 
 		data: function(){
 			return {where: "Все фразы"}
 		},
 		 yieldTemplates: {
-    	  'phrases': {to: 'dataAfter'}
+    	  'client': {to: 'sayBefore'},
+    	  'tags' : {to: 'tags'}
 	    },
 		before : function(){
 			init();
