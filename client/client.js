@@ -6,7 +6,7 @@ Contacts=new Meteor.Collection("contacts");
 requiredContactPositions=["учредитель","гендир","секретарь","механик","диспетчер","бухгалтер"]; 
 contactTemplate = {position: "", fio:"",address:"", phones:"", email:"", comments:"", zone: "", birthday: ""};
 init = function(){
-	Session.set("tagрыs",null);
+	Session.set("tags",null);
 	Session.set("previous",null);
 	Session.set("clientID",null);
 	Session.set("searchMode",null);
