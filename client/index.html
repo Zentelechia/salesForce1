@@ -3,6 +3,7 @@
 		<tr>
 			<td>
 				{{> header}}
+				{{> clientsHistory}}
 			</td>
 			<td rowspan="3">
 				{{> calendar}}
@@ -36,16 +37,13 @@
 	</table>
 </template>
 
-
-
-
 <template name="phrases">
 	<div id="phrases">
 		{{#each phrase}}
 		{{#constant}}
-			{{{daySplitter added}}}
+		{{{daySplitter added}}}
 		{{/constant}}
-		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}<img src="../remove.png"/></span>{{/each}}</div>
+		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}</span>{{/each}}</div>
 		{{/each}}
 	</div>
 </template>
@@ -58,7 +56,11 @@
 		{{/each}}
 	</div>
 </template>
-
+<template name="clientsHistory">
+{{#each list}}
+...{{this}}
+{{/each}}
+</template>
 <template name="fileUpload">
 	<div class="fileupload fileupload-new" data-provides="fileupload">
 		<span class="btn btn-file">
@@ -72,8 +74,7 @@
 	</div>
 </template>
 <template name="client">
-	<div class=".clientCard">
-		<div>{{client.workName}}</div>
+	<div class="clientCard">
 		<div>{{client.web}}</div>
 		<div>{{client.legal}}</div>
 		{{> contacts}}
@@ -88,7 +89,7 @@
 </template>
 
 <template name="tags">
-	<div id="tags">
+	<div id="tags"><img id="colorpick" src="../colors.png"/>
 		{{#each tags}}
 		<span 	{{{isTagSelected name}}} unselectable="on">{{name}}</span>
 		{{/each}}
@@ -125,39 +126,60 @@
 <template name="calendar">
 	<div id="calendar">
 		{{#each cells}}
-			<span data="{{this.displayDate}}" class="{{this.month}}" count={{this.c}}>{{this.day}}</span>
+		<div data="{{this.date}}" class="{{this.month}} cell" count={{this.c}}>
+			<div class="plan" style="height: {{this.plan}}%"></div>
+			<div class="fact" style="height: {{this.fact}}%; opacity: {{this.result}}"></div>
+			<div class="day">{{this.day}}</div>
+		</div>
 		{{/each}}
 	</div>
 </template>
 
 
 <template name="contacts">
-	<table>
-	<tr>
-		<td>Должность</td>
-		<td>Фамилия</td>
-		<td>Адрес</td>
-		<td>Телефоны</td>
-		<td>Email</td>
-		<td>Примечение</td>
-		<td>Обязанности</td>
-		<td>День рождения</td>
-	</tr>
-	{{#each contact}}
-	<tr>
-		<td>{{this.position}}</td>
-		<td>{{fio}}</td>
-		<td>{{address}}</td>
-		<td>{{phones}}</td>
-		<td>{{email}}</td>
-		<td>{{comments}}</td>
-		<td>{{zone}}</td>
-		<td>{{birthday}}</td>
-	</tr>
-	{{/each}}
+	<table id="contacts">
+		<thead>
+			{{#each fields}}
+			<th>{{this.caption}}</th>
+			{{/each}}
+		</thead>
+		{{#each contact}}
+		<tr id='{{this._id}}'>
+			{{#each fields}}
+			<td contenteditable >{{{getKey ../this this.sys}}}</td>
+			{{/each}}
+		<tr>
+		{{/each}}
 	</table>
 </template>
 
+
+<template name="old_contacts">
+	<table>
+		<tr>
+			<td>Должность</td>
+			<td>Фамилия</td>
+			<td>Адрес</td>
+			<td>Телефоны</td>
+			<td>Email</td>
+			<td>Примечение</td>
+			<td>Обязанности</td>
+			<td>День рождения</td>
+		</tr>
+		{{#each contact}}
+		<tr>
+			<td>{{this.position}}</td>
+			<td>{{fio}}</td>
+			<td>{{address}}</td>
+			<td>{{phones}}</td>
+			<td>{{email}}</td>
+			<td>{{comments}}</td>
+			<td>{{zone}}</td>
+			<td>{{birthday}}</td>
+		</tr>
+		{{/each}}
+	</table>
+</template>
 
 <template name="header">
 	<h2>{{where}}</h2>

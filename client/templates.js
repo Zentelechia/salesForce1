@@ -1,6 +1,5 @@
 var previous;
 var q={};
-
 function getHistory(client_id,tags,query){
 	q={};
 	if (client_id){
@@ -13,9 +12,7 @@ function getHistory(client_id,tags,query){
 		q.name={$regex : query, $options: 'i'};
 	}
 	Session.set("q",q);
-	console.log(q);
-	console.log("-------------------------------------");
-	return Phrases.find(q);
+	return Phrases.find(); //,q
 }
 function getClients(query){
 	q={};
@@ -34,20 +31,28 @@ Template.tags.tags=function(){
 Template.contacts.contact=function(){
 	return Contacts.find({client_id : Session.get("clientID")});
 };
+Template.contacts.fields=contactTemplate.fields;
+Template.contacts.events({
+	'focusout td' : function(e){
+		self=$(e.target);
+		Meteor.call("updateContact", self.parent().attr('id'), contactTemplate.fields[self.index()].sys, self.html());
+		return false;
+	}
+});
 Template.tags.events({
 	'click span': function(event){
 		$(event.currentTarget).toggleClass("tagged");
 		tags=Session.get("tags")||[]; 
 		if ($(event.currentTarget).is(".tagged")){
 			tags.push($(event.currentTarget).text());
-			console.log("pushed");
+			//console.log("pushed");
 		}
 		else{
 			tags.remove($(event.currentTarget).text());
-			console.log("removed");
+			//console.log("removed");
 		}
 		Session.set("tags",tags.length?tags:null);
-		console.log(Session.get("tags"));
+		//console.log(Session.get("tags"));
 	}, 
 	'selectstart span': function(event){
 		return false;
@@ -80,9 +85,6 @@ Template.phrases.rendered=function(){
 
 };
 Template.phrases.phrase=function(){
-	console.log(Session.get("clientID"));
-	console.log(Session.get("tags"));
-	console.log(Session.get("query"));
 	return getHistory(Session.get("clientID"), Session.get("tags"), Session.get("query"));
 };
 Template.header.where=function(){
@@ -92,51 +94,55 @@ Template.clients.rendered=function(){
 	$("#clients").autocomplete({source : Clients.find().fetch()});
 };
 
+
 Template.clients.client=function(){
 	return  getClients(Session.get("query"));
+};
+Template.clientsHistory.list=function(){
+	return  Session.get("clientsHistory");
 };
 
 Template.clients.events({
 	'click .clients div' : function() {
 		cid=$(event.currentTarget)[0].id;
+		a=Session.get("clientsHistory")||[];
+		if (a.length=3) {a.shift();}
+		a.push(Clients.findOne({_id: cid}).workName);
+		Session.set("clientsHistory",a);
+		
 		Router.go('client',{id : cid});
 
 	}
 });
 
+
 Template.client.client=function(){
-	c=Contacts.find({client_id : Session.get("clientID"), required: 1}).count();
-	if (c==0){
-		$(requiredContactPositions).each(function(i,e){
-			cc=contactTemplate;
-			cc.required=1;
-			cc.position=e;
-			cc.client_id=Session.get("clientID");
-			Contacts.insert(cc);
-			cc={};
-		});
-		return Clients.findOne({_id : Session.get("clientID")});
-	}
+	return Clients.findOne({_id : Session.get("clientID")});
 }
 
 
-	Template.phrases.events({
-		'click #phrases div': function(event){
-			id=$(event.currentTarget)[0].id;
-			$("#say").val(Phrases.findOne({_id : id}).name);
-		},
-		'click .tag': function(){
-			tags=Session.get("tags")||[];
-			tags.push($(event.currentTarget).text());
-			Session.set("tags",tags.unique());
-		}
-	});
+Template.phrases.events({
+	'click #phrases div': function(event){
+		id=$(event.currentTarget)[0].id;
+		//$("#say").val(Phrases.findOne({_id : id}).name);
+	},
+	'click .tag': function(){
+		tags=Session.get("tags")||[];
+		tags.push($(event.currentTarget).text());
+		Session.set("tags",tags.unique());
+	}
+});
 
-	Template.say.events({
-		'keyup #say': function(e) {
-			say=$(e.currentTarget).val();
-			if(e.which == 13) {
-				if (Session.equals("enter",1)){
+Template.say.events({
+	'keyup #say': function(e) {
+		say=$(e.currentTarget).val();
+		if(e.which == 13){
+			if (Session.equals("enter",1)){
+				if (Router.current().route.name=="clients")				{
+					Meteor.call('addClient',$("#say").val());
+					$("#say").val("");
+				}
+				else{
 					dt=jsParseDate(say);
 					Phrases.insert({name: say.replace("\n\n",""), added: Date.now(), date: dt.date.toLocaleString(), tags : [], clientID: Session.get("clientID")},function(er,id){
 						$("#say").val("");
@@ -149,33 +155,25 @@ Template.client.client=function(){
 								}
 							});
 						}
-
-						Session.set("enter",0);
 					});
-
 				}
-				else{
-					Session.set("enter",1);
-				}	
-			}
-			else if (e.which == 32){
-				if (Session.equals("space",1)){
-					alert ("dd");
-				}
-				else{
-					Session.set("space",1);
-				}	
-			}
-			else if (Session.get("searchMode")){
-				Session.set("query",$("#say").val()||null);
-				console.log(Session.get("query"));
-			}
-			else {
 				Session.set("enter",0);
-				Session.set("space",0);
-			}
+			}else{
+				Session.set("enter",1);
+			}	
+		}else if (e.which == 32){
+			if (Session.equals("space",1)){
+			}else{
+				Session.set("space",1);
+			}	
+		}else if (Session.get("searchMode")){
+			Session.set("query",$("#say").val()||null);
+		}else{
+			Session.set("enter",0);
+			Session.set("space",0);
 		}
-	});
+	}
+});
 Template.fileUpload.events({
 	"change .file-upload-input": function(event, template){
 		var func = this;
@@ -230,24 +228,40 @@ Template.tools.rendered=function(){
 
 };
 Template.calendar.cells=function(){
-	
 	monthStart=moment().startOf('month');
 	var cd=monthStart.subtract('days',monthStart.day());
 	var cell={};
 	var cells = [];
-
 	for (var i = 1; i <= 42; i++) { 
 		cd.add('days',1);
 		cell.day=cd.date();
 		cell.date=cd.format("DD.MM.YY");
 		cell.month=cd.month()==moment().month()?"current":cd.month()>moment().month()?"next":"previous";
 		cell.c=actionsCount();
+		cell.plan=Math.round((Math.random()*10+5)/15*100);
+		cell.fact=cd<moment()?Math.round((Math.random()*10)/15*100):0;
+		cell.result=0.5+cell.fact/cell.plan/2;
 		cells.push(cell);
 		cell=[];
 	}
 //	console.log(cells);
 return cells;
-};
+}
+Template.calendar.rendered=function(){
+	$(".cell").droppable({
+		drop: function( event, ui ) {
+			if (ui.draggable.parent().is("#phrases")){
+				console.log($(this).attr('data'));
+			}
+		}
+	});
+
+}
+Template.calendar.events({
+	'click span' : function(event){
+		Session.set("date",$(event.currentTarget).attr('data'))
+	}
+});
 
 Handlebars.registerHelper('daySplitter', function(added) {
 	now=moment(added).format("dddd DD MMMM YYYY");
@@ -261,6 +275,11 @@ Handlebars.registerHelper('daySplitter', function(added) {
 		return "<strong>"+now+"</strong><hr>";
 	}
 });
+
+Handlebars.registerHelper('getKey', function(obj,key) {
+	return obj[key];
+});
+
 
 Handlebars.registerHelper('selectTags', function(object) {
 	if (object){
@@ -287,5 +306,12 @@ Handlebars.registerHelper('searchMode', function() {
 	return new Handlebars.SafeString(
 
 		Session.get("searchMode")?"class='search'":""
+		);
+});
+
+
+Handlebars.registerHelper('getFirstObjectPropertyValue', function(obj) {
+	return new Handlebars.SafeString(
+		obj[Object.keys(obj)[0]]
 		);
 });

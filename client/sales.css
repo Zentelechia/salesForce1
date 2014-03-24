@@ -20,14 +20,12 @@ body{
 	background-color: #CCC;
 }
 .current{
-		background-color: #AAA;
+		background-color: #999;
 }
-.previous{
-		background-color: #EEE;
+.previous,.next{
+		background-color: #CCC;
 }
-.next{
-		background-color: #EEE;
-}
+
 #calendar span{
 	text-align: center;
 	color: white;
@@ -41,7 +39,8 @@ body{
 }
 #phrases div {
 	border-bottom: 1px solid #AAA;
-	white-space: pre-wrap
+	white-space: pre-wrap;
+	cursor: default;
 }
 #phrases div:hover {
 	background-color: #EEE;
@@ -57,6 +56,20 @@ body{
 	border: 1px solid black;
 	top: 0px;
 }
+#contacts {
+	width: 100%;
+	background-color: white;
+
+}
+#contacts td{
+	border: 1px solid gray;
+	background-color: #BBB;
+	text-align: center;
+}
+#contacts thead th{
+	text-align: center;
+	background-color: #999;
+}
 .inline-tag {
 	cursor: pointer;
 	font-weight: 700;
@@ -64,7 +77,7 @@ body{
 #tags span, #addTag, .tag{
 	display: inline;
 	background-color: #4E9;
-	padding:0px 4px 0px 4px;
+	padding:0px 14px 0px 4px;
 	color: white;
 	font-weight: 500;
 	font-size: 12px;
@@ -72,6 +85,9 @@ body{
 	user-select: none;
 	outline: 0px transparent;
 	margin-left: 2px;
+	background-image: url(remove.png);
+	background-repeat: no-repeat;
+	background-position: right;
 
 }
 .tagged{
@@ -92,11 +108,11 @@ body{
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
-	position: absolute;
 	top: 0px;
 	right: 0px;
+	position: absolute;
 }
-#calendar span{
+#calendar .cell{
 	float: left;
 	margin: 0px;
 	display: inline-block;
@@ -104,5 +120,30 @@ body{
 	height: 18px;
 	border: 1px solid #EEE;
 	overflow: hidden;
-  color: green;
+ 	color: black;
+ 	cursor: pointer;
+ 	position: relative;
+}
+
+.plan, .fact, .day{
+	display: inline-block;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+
+}
+.plan {
+	background-color: green;
+}
+.fact {
+	background-color: blue;
+}
+.day {
+	color: #EEE;
+	font-size: 10px;
+	text-align: left;
+
+}
+.clients div {
+ cursor: pointer;
 }
