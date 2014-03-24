@@ -10,5 +10,4 @@ iron-router
 accounts-password
 accounts-base
 accounts-ui
-autopublish
 underscore

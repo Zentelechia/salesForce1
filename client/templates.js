@@ -12,7 +12,7 @@ function getHistory(client_id,tags,query){
 		q.name={$regex : query, $options: 'i'};
 	}
 	Session.set("q",q);
-	return Phrases.find(); //,q
+	return Phrases.find(q);
 }
 function getClients(query){
 	q={};
@@ -25,14 +25,29 @@ function actionsCount(date){
 	return 5;
 	//Phrases.find(/*Session.get("q")||{}*/).count()
 }
+
+
 Template.tags.tags=function(){
 	return Tags.find();
 };
+
 Template.contacts.contact=function(){
-	return Contacts.find({client_id : Session.get("clientID")});
+	return Contacts.find({fio : {$ne : ""}});
 };
 Template.contacts.fields=contactTemplate.fields;
 Template.contacts.events({
+	'focusout td' : function(e){
+		self=$(e.target);
+		Meteor.call("updateContact", self.parent().attr('id'), contactTemplate.fields[self.index()].sys, self.html());
+		return false;
+	}
+});
+
+Template.clientContacts.fields=contactTemplate.fields;
+Template.clientContacts.contact=function(){
+	return Contacts.find({client_id : Session.get("clientID")});
+};
+Template.clientContacts.events({
 	'focusout td' : function(e){
 		self=$(e.target);
 		Meteor.call("updateContact", self.parent().attr('id'), contactTemplate.fields[self.index()].sys, self.html());
@@ -80,7 +95,9 @@ Template.phrases.rendered=function(){
 		}
 	});
 	$("#phrases div").draggable({
-		helper: "clone"
+		helper: function() {return $("#target").clone()},
+		revert: true,
+		cursorAt:  { left: 16, bottom: 16 }
 	});
 
 };
@@ -124,7 +141,7 @@ Template.client.client=function(){
 Template.phrases.events({
 	'click #phrases div': function(event){
 		id=$(event.currentTarget)[0].id;
-		//$("#say").val(Phrases.findOne({_id : id}).name);
+		$("#say").val(Phrases.findOne({_id : id}).name);
 	},
 	'click .tag': function(){
 		tags=Session.get("tags")||[];
@@ -144,14 +161,14 @@ Template.say.events({
 				}
 				else{
 					dt=jsParseDate(say);
-					Phrases.insert({name: say.replace("\n\n",""), added: Date.now(), date: dt.date.toLocaleString(), tags : [], clientID: Session.get("clientID")},function(er,id){
+					Phrases.insert({owner: Meteor.userId(), name: say.replace("\n\n",""), added: Date.now(), date: dt.date.toLocaleString(), tags : [], clientID: Session.get("clientID")},function(er,id){
 						$("#say").val("");
 						r=/#(.+?)#/g;
 						if (say.replace("\n\n","").match(r)){
 							say.replace("\n\n","").match(r).forEach(function(e){
 								Meteor.apply("applyTag",[id,e.replace(/#/g,"")]);
 								if (Tags.find({name: e.replace(/#/g,"")}).count()==0){
-									Tags.insert({name: e.replace(/#/g,"")});
+									Meteor.call("addTag", e.replace(/#/g,""));
 								}
 							});
 						}
@@ -222,7 +239,7 @@ Template.tools.rendered=function(){
 			};
 		},
 		deactivate: function( event, ui ) {
-			$(this).attr("src","bin.png");
+			$(this).attr("src","../bin.png");
 		}
 	});
 
@@ -314,4 +331,4 @@ Handlebars.registerHelper('getFirstObjectPropertyValue', function(obj) {
 	return new Handlebars.SafeString(
 		obj[Object.keys(obj)[0]]
 		);
-});
+});	

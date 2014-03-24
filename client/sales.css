@@ -56,17 +56,17 @@ body{
 	border: 1px solid black;
 	top: 0px;
 }
-#contacts {
+#myContacts, #contacts {
 	width: 100%;
 	background-color: white;
 
 }
-#contacts td{
+#contacts td, #myContacts td{
 	border: 1px solid gray;
 	background-color: #BBB;
 	text-align: center;
 }
-#contacts thead th{
+#contacts thead th, #myContacts thead th{
 	text-align: center;
 	background-color: #999;
 }
@@ -146,4 +146,9 @@ body{
 }
 .clients div {
  cursor: pointer;
+}
+#loading {
+	position: absolute;
+	top: 0px;
+	left:0px;
 }

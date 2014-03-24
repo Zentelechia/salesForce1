@@ -3,7 +3,43 @@ Phrases=new Meteor.Collection("phrases");
 Clients=new Meteor.Collection("clients");
 Tags=new Meteor.Collection("tags");
 Contacts=new Meteor.Collection("contacts");
-//Meteor.AppCache.config({firefox: true});
+
+Meteor.publish("clients",function(){
+	if (this.userId) {
+		return Clients.find({owner: this.userId});
+	} else {   
+		this.ready();
+	}
+});
+Meteor.publish("tags",function(){
+
+	if (this.userId) {
+		return Tags.find({$or: [{owner : this.userId}, {owner : null}]});
+	} else {   
+		this.ready();
+	}
+	
+});
+
+Meteor.publish("phrases",function(){
+	if (this.userId) {
+		return Phrases.find({owner: this.userId});
+	} else {   
+		this.ready();
+	}
+
+
+});
+
+Meteor.publish("contacts",function(){
+	if (this.userId) {
+		return Contacts.find();
+	} else {   
+		this.ready();
+	}
+});
+
+
 
 Meteor.methods({
 	'file-upload': function (fileInfo, fileData) {
@@ -24,6 +60,9 @@ Meteor.methods({
 			}
 		});
 	},
+	addTag : function(tag){
+		Tags.insert({name: tag, owner: this.userId});
+	},
 	removeTagByName: function(tagName){
 		Tags.remove({name : tagName });
 	},
@@ -34,7 +73,7 @@ Meteor.methods({
 		Contacts.remove({});
 	},
 	addClient:function(workName){
-		c_id=Clients.insert({workName: workName});
+		c_id=Clients.insert({workName: workName, owner: this.userId});
 		clientTemplate.requiredPositions.forEach(function(p,i){
 			contact={};
 			contactTemplate.fields.forEach(function(e){
@@ -43,6 +82,7 @@ Meteor.methods({
 			contact.required=1;
 			contact.position=p;
 			contact.client_id=c_id;
+			contact.owner=this.userId;
 			Contacts.insert(contact); 
 		});
 	},

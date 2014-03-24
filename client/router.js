@@ -1,7 +1,16 @@
-
 Router.configure({
-	layoutTemplate: 'layout'
+	layoutTemplate: 'layout',
+	loadingTemplate: 'loading'
 });
+init = function(){
+	Session.set("tags",null);
+	Session.set("previous",null);
+	Session.set("clientID",null);
+	Session.set("searchMode",null);
+	Session.set("query",null);
+	Session.set("enter",null);
+}
+
 Meteor.startup(function(){
 	Router.map(function (){
 		this.route('home', {
@@ -22,14 +31,17 @@ Meteor.startup(function(){
 				'client': {to: 'sayBefore'},
 				'tags' : {to: 'tags'}
 			},
-			before : function(){
-
-				this.subscribe('clientCard', this.params.id).wait();
-				console.log(this.params.id);
+			waitOn: function(){
+				return this.subscribe("clients");
+			},
+			before: function(){
+			
 				init();
+				console.log(this.params.id);
 				Session.set("clientID",this.params.id);
-				client=Clients.findOne().wait();
-				Session.set("where",client.workName);
+				client=Clients.findOne({_id: this.params.id});
+				Session.set("where","Клиент: "+client.workName);
+				
 			}
 		});
 		this.route('clients', {
@@ -38,6 +50,14 @@ Meteor.startup(function(){
 			before : function(){
 				init();
 				Session.set("where","Список клиентов");
+			}
+		}),
+		this.route('contacts', {
+			path: '/contacts',
+			template: 'contacts',
+			before : function(){
+				init();
+				Session.set("where","Список контактов");
 			}
 		});
 	});

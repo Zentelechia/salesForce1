@@ -1,4 +1,7 @@
+
 <template name="layout">
+	{{loginButtons}}
+
 	<table id="layout">
 		<tr>
 			<td>
@@ -35,6 +38,7 @@
 			</td>
 		</tr>
 	</table>
+	<img id="target" style="display: none" src="../target.gif"/>
 </template>
 
 <template name="phrases">
@@ -77,7 +81,7 @@
 	<div class="clientCard">
 		<div>{{client.web}}</div>
 		<div>{{client.legal}}</div>
-		{{> contacts}}
+		{{> clientContacts}}
 		<div>{{client.carsTotal}}</div>
 		<div>{{client.carsEquiped}}</div>
 		<div>{{client.carsTypes}}</div>
@@ -104,19 +108,23 @@
 <template name="say">
 	<textarea {{{searchMode}}} id="say"/>
 </template>
-
+<template name="loadingTemplate">
+<img id="loading" src="../loading.gif"/>
+</template>
 <template name="tools">
 	<div id="tools">
 		<a href="{{pathFor 'home'}}"><img selectStart=1 selectEnd=1 alt="Поиск" text="" src="../home.png"/></a>
 		<img id="search" selectStart=1 selectEnd=1 alt="Поиск" text="" src="../search.png"/>
 		<img id="clear" selectStart=1 selectEnd=1 alt="Стереть" text="" src="../delete.png"/>
+		<a href="{{pathFor 'clients'}}"><img id="clientsIcon" src="../clients.png"/></a>
+		<a href="{{pathFor 'contacts'}}"><img id="contactsIcon" src="../contacts.png"/></a>		
 		<img selectStart=30 selectEnd=34 alt="Звонок" text="Осуществлен #звонок# клиенту #.....# на тему:. Результат:" src="../call.png"/>
 		<img selectStart=27 selectEnd=31 alt="Встреча" text="Была #встреча# с клиентом #....#. Тема встречи:....... Задачи" src="../meeting.png"/>
 		<img selectStart=1 selectEnd=5 alt="Презентация" text="Выполнена #презентация# клиенту #....#. В ходе презентации выявлены следующие потребности....... Дальнейшие действия......." src="../presentation.png"/>
 		<img selectStart=1 selectEnd=8 alt="Заметка" text="#Заметка# по клиенту #....# "src="../notes.png"/>
 		<img selectStart=12 selectEnd=17 alt="Напомнить" text="#Напомнить# когда о " src="../remind.png"/>
 		<img selectStart=1 selectEnd=9 alt="Делегировать" text="#Поручить# задачу" src="../delegate.png"/>
-		<a href="{{pathFor 'clients'}}"><img id="clientsIcon" src="../clients.png"/></a>
+		
 		<img selectStart=1 selectEnd=1 alt="В корзину" text="" src="../attachment.png"/>
 		<img id="bin" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../bin.png"/>
 		<img id="books" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../thisMonth.png"/>
@@ -136,7 +144,7 @@
 </template>
 
 
-<template name="contacts">
+<template name="clientContacts">
 	<table id="contacts">
 		<thead>
 			{{#each fields}}
@@ -154,31 +162,22 @@
 </template>
 
 
-<template name="old_contacts">
-	<table>
-		<tr>
-			<td>Должность</td>
-			<td>Фамилия</td>
-			<td>Адрес</td>
-			<td>Телефоны</td>
-			<td>Email</td>
-			<td>Примечение</td>
-			<td>Обязанности</td>
-			<td>День рождения</td>
-		</tr>
+<template name="contacts">
+<table id="myContacts">
+		<thead>
+			{{#each fields}}
+			<th>{{this.caption}}</th>
+			{{/each}}
+		</thead>
 		{{#each contact}}
+		<tr id='{{this._id}}'>
+			{{#each fields}}
+			<td contenteditable >{{{getKey ../this this.sys}}}</td>
+			{{/each}}
 		<tr>
-			<td>{{this.position}}</td>
-			<td>{{fio}}</td>
-			<td>{{address}}</td>
-			<td>{{phones}}</td>
-			<td>{{email}}</td>
-			<td>{{comments}}</td>
-			<td>{{zone}}</td>
-			<td>{{birthday}}</td>
-		</tr>
 		{{/each}}
 	</table>
+	
 </template>
 
 <template name="header">
