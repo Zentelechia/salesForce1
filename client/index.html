@@ -44,10 +44,8 @@
 <template name="phrases">
 	<div id="phrases">
 		{{#each phrase}}
-		{{#constant}}
 		{{{daySplitter added}}}
-		{{/constant}}
-		<div id="{{_id}}">{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}</span>{{/each}}</div>
+		<div id="{{_id}}">{{#if client_name}}<a href="../client/{{clientID}}">{{client_name}}</a>: {{/if}}{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}</span>{{/each}}</div>
 		{{/each}}
 	</div>
 </template>
@@ -60,6 +58,20 @@
 		{{/each}}
 	</div>
 </template>
+
+<template name="globalSearch">
+		{{#each client}}
+		<span id="{{_id}}">{{workName}}</span>
+		{{/each}}
+		{{#each contact}}
+			<span id='{{this._id}}'>{{name}}</span>
+		{{/each}}
+		{{#each phrase}}
+			<span id='{{this._id}}'>{{name}}</span>
+		{{/each}}
+</template>
+
+
 <template name="clientsHistory">
 {{#each list}}
 ...{{this}}
@@ -95,7 +107,7 @@
 <template name="tags">
 	<div id="tags"><img id="colorpick" src="../colors.png"/>
 		{{#each tags}}
-		<span 	{{{isTagSelected name}}} unselectable="on">{{name}}</span>
+		<span 	{{{isTagSelected name}}} unselectable="on">{{#if stage}}{{stage}}.{{/if}}{{name}}</span>
 		{{/each}}
 		<div contenteditable id="addTag"></div>
 	</div>
@@ -165,12 +177,14 @@
 <template name="contacts">
 <table id="myContacts">
 		<thead>
+			<th>Клиент</th>
 			{{#each fields}}
 			<th>{{this.caption}}</th>
 			{{/each}}
 		</thead>
 		{{#each contact}}
 		<tr id='{{this._id}}'>
+			<td>{{this.client_name}}</td>
 			{{#each fields}}
 			<td contenteditable >{{{getKey ../this this.sys}}}</td>
 			{{/each}}
@@ -178,6 +192,9 @@
 		{{/each}}
 	</table>
 	
+</template>
+
+<template name="contact">
 </template>
 
 <template name="header">

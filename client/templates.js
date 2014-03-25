@@ -12,7 +12,7 @@ function getHistory(client_id,tags,query){
 		q.name={$regex : query, $options: 'i'};
 	}
 	Session.set("q",q);
-	return Phrases.find(q);
+	return Phrases.find(q,{sort: {added : -1}});
 }
 function getClients(query){
 	q={};
@@ -21,6 +21,14 @@ function getClients(query){
 	}
 	return Clients.find(q,{sort: {workName: 1}});
 }
+function getContacts(query){
+	q={};
+	q.fio={$ne : ""};
+	if (query){
+		q["$or"]=[{fio :{$regex : query, $options: 'i'}}, {comments: {$regex : query, $options: 'i'}}];
+	}
+	return Contacts.find(q);
+}
 function actionsCount(date){
 	return 5;
 	//Phrases.find(/*Session.get("q")||{}*/).count()
@@ -28,17 +36,21 @@ function actionsCount(date){
 
 
 Template.tags.tags=function(){
-	return Tags.find();
+	return Tags.find({},{sort: {stage : 1}});
 };
 
 Template.contacts.contact=function(){
-	return Contacts.find({fio : {$ne : ""}});
+	return getContacts(Session.get("query"));
 };
 Template.contacts.fields=contactTemplate.fields;
 Template.contacts.events({
 	'focusout td' : function(e){
 		self=$(e.target);
-		Meteor.call("updateContact", self.parent().attr('id'), contactTemplate.fields[self.index()].sys, self.html());
+		data={};
+		data.id=self.parent().attr('id');
+		data.field=contactTemplate.fields[self.index()-1].sys;
+		data.value=self.html()
+		Meteor.call("updateContact", data);
 		return false;
 	}
 });
@@ -50,7 +62,11 @@ Template.clientContacts.contact=function(){
 Template.clientContacts.events({
 	'focusout td' : function(e){
 		self=$(e.target);
-		Meteor.call("updateContact", self.parent().attr('id'), contactTemplate.fields[self.index()].sys, self.html());
+		data={};
+		data.id=self.parent().attr('id');
+		data.field=contactTemplate.fields[self.index()].sys;
+		data.value=self.html()
+		Meteor.call("updateContact", data);
 		return false;
 	}
 });
@@ -75,7 +91,7 @@ Template.tags.events({
 
 	'focusout #addTag' : function(){
 		if ($("#addTag").text().replace(/(\.\s)/g,"")){
-			Tags.insert({name: $("#addTag").text()});
+			Meteor.call("addTag",$("#addTag").text());
 			$("#addTag").text("");
 		}
 	}
@@ -160,8 +176,10 @@ Template.say.events({
 					$("#say").val("");
 				}
 				else{
-					dt=jsParseDate(say);
-					Phrases.insert({owner: Meteor.userId(), name: say.replace("\n\n",""), added: Date.now(), date: dt.date.toLocaleString(), tags : [], clientID: Session.get("clientID")},function(er,id){
+					Meteor.call("addPhrase", say.replace("\n\n",""),Session.get("clientID"));
+					$("#say").val("");
+/*					
+					function(er,id){
 						$("#say").val("");
 						r=/#(.+?)#/g;
 						if (say.replace("\n\n","").match(r)){
@@ -173,6 +191,7 @@ Template.say.events({
 							});
 						}
 					});
+*/					
 				}
 				Session.set("enter",0);
 			}else{

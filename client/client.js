@@ -13,6 +13,14 @@ Deps.autorun(function () {
 Meteor.startup(function () {
 	
 	init();
+	$(document).on('keyup',function(e){
+		if(e.which == 27){
+			Session.set("tags",null);
+			Session.set("searchMode",null);
+			Session.set("query",null);
+			$("#say").val("");
+		}
+	})
 	moment.lang("ru");
 });
 

@@ -1,6 +1,10 @@
 Router.configure({
 	layoutTemplate: 'layout',
-	loadingTemplate: 'loading'
+	loadingTemplate: 'loading',
+	waitOn: function(){
+		return [this.subscribe("clients"), this.subscribe("phrases"),this.subscribe("contacts")];
+
+	}
 });
 init = function(){
 	Session.set("tags",null);
@@ -31,15 +35,10 @@ Meteor.startup(function(){
 				'client': {to: 'sayBefore'},
 				'tags' : {to: 'tags'}
 			},
-			waitOn: function(){
-				return this.subscribe("clients");
-			},
 			before: function(){
-			
 				init();
-				console.log(this.params.id);
 				Session.set("clientID",this.params.id);
-				client=Clients.findOne({_id: this.params.id});
+				client=Clients.findOne(this.params.id);
 				Session.set("where","Клиент: "+client.workName);
 				
 			}
@@ -58,6 +57,16 @@ Meteor.startup(function(){
 			before : function(){
 				init();
 				Session.set("where","Список контактов");
+			}
+		}),
+		this.route('contact', {
+			path: '/contact/:id',
+			template: 'contact',
+			before : function(){
+				init();
+				contact=Contacts.findOne(this.params.id)
+				Session.set("where","Контактное лицо: "+contact.fio);
+				Session.set("contactID",this.params.id);
 			}
 		});
 	});

@@ -31,7 +31,7 @@ Meteor.publish("phrases",function(){
 
 });
 
-Meteor.publish("contacts",function(){
+Meteor.publish("contacts",function(q){
 	if (this.userId) {
 		return Contacts.find();
 	} else {   
@@ -64,15 +64,15 @@ Meteor.methods({
 		Tags.insert({name: tag, owner: this.userId});
 	},
 	removeTagByName: function(tagName){
-		Tags.remove({name : tagName });
+		Tags.remove({name : tagName }); //, owner : this.userId
 	},
 	init: function(){
 		Phrases.remove({});
 		Clients.remove({});
-		Tags.remove({});
+	//	Tags.remove({});
 		Contacts.remove({});
 	},
-	addClient:function(workName){
+	addClient: function(workName){
 		c_id=Clients.insert({workName: workName, owner: this.userId});
 		clientTemplate.requiredPositions.forEach(function(p,i){
 			contact={};
@@ -82,14 +82,29 @@ Meteor.methods({
 			contact.required=1;
 			contact.position=p;
 			contact.client_id=c_id;
+			contact.client_name=workName;
 			contact.owner=this.userId;
 			Contacts.insert(contact); 
 		});
 	},
-	updateContact:function(id,field,value){
+	addPhrase: function(text,client_id){
+		dt=jsParseDate(text);
+		phrase={};
+		phrase.owner=this.userId;
+		phrase.name=text;
+		phrase.added=Date.now();
+		phrase.date=dt.date.toLocaleString();
+		phrase.tags=[];
+		if (client_id!=null){
+			phrase.clientID=client_id;
+			phrase.client_name =Clients.findOne(client_id).workName;
+		}
+		Phrases.insert(phrase);
+	},
+	updateContact:function(data){
 		o={};
-		o[field]=value;
-		Contacts.update({_id: id},{$set : o})
+		o[data.field]=data.value;
+		Contacts.update(data.id,{$set : o});
 		//Contacts.update({_id:obj.id},{obj.field : obj.value });
 	}
 });
