@@ -6,7 +6,7 @@
 		<tr>
 			<td>
 				{{> header}}
-				{{> clientsHistory}}
+				{{> history}}
 			</td>
 			<td rowspan="3">
 				{{> calendar}}
@@ -45,7 +45,17 @@
 	<div id="phrases">
 		{{#each phrase}}
 		{{{daySplitter added}}}
-		<div id="{{_id}}">{{#if client_name}}<a href="../client/{{clientID}}">{{client_name}}</a>: {{/if}}{{{selectTags name}}}{{#each tags}}<span class="tag">{{this}}</span>{{/each}}</div>
+		<div id="{{_id}}">{{addedText}}
+			{{#if client_name}}
+			<a href="../client/{{clientID}}">
+				{{client_name}}
+			</a>: 
+			{{/if}}
+			<span>{{name}}</span>	
+			{{#each tags}}
+			<span class="tag">{{this}}</span>
+			{{/each}}
+		</div>
 		{{/each}}
 	</div>
 </template>
@@ -54,28 +64,28 @@
 	<input id="clients"/>
 	<div class="clients">
 		{{#each client}}
-		<div id="{{_id}}">{{workName}}</div>
+		<div id="{{_id}}">{{workName}}</div><span>{{stage}}</span>
 		{{/each}}
 	</div>
 </template>
 
 <template name="globalSearch">
-		{{#each client}}
-		<span id="{{_id}}">{{workName}}</span>
-		{{/each}}
-		{{#each contact}}
-			<span id='{{this._id}}'>{{name}}</span>
-		{{/each}}
-		{{#each phrase}}
-			<span id='{{this._id}}'>{{name}}</span>
-		{{/each}}
+	{{#each client}}
+	<span id="{{_id}}">{{workName}}</span>
+	{{/each}}
+	{{#each contact}}
+	<span id='{{this._id}}'>{{name}}</span>
+	{{/each}}
+	{{#each phrase}}
+	<span id='{{this._id}}'>{{name}}</span>
+	{{/each}}
 </template>
 
 
-<template name="clientsHistory">
-{{#each list}}
-...{{this}}
-{{/each}}
+<template name="history">
+	{{#each list}}
+		{{this}}
+	{{/each}}
 </template>
 <template name="fileUpload">
 	<div class="fileupload fileupload-new" data-provides="fileupload">
@@ -91,25 +101,19 @@
 </template>
 <template name="client">
 	<div class="clientCard">
-		<div>{{client.web}}</div>
-		<div>{{client.legal}}</div>
+		<div id="fields">
+		{{#each fields}}
+		<span>{{caption}}</span><span sys="{{sys}}" contenteditable>{{{clientProperty sys}}}</span><br>
+		{{/each}}
+		</div>
 		{{> clientContacts}}
-		<div>{{client.carsTotal}}</div>
-		<div>{{client.carsEquiped}}</div>
-		<div>{{client.carsTypes}}</div>
-		<div>{{client.installedEquipment}}</div>
-		<div>{{client.fuelPrincipe}}</div>
-		<div>{{client.buyingSchema}}</div>
-		<div>{{client.competitors}}</div>
 	</div>
 </template>
 
 <template name="tags">
 	<div id="tags"><img id="colorpick" src="../colors.png"/>
 		{{#each tags}}
-		<span 	{{{isTagSelected name}}} unselectable="on">{{#if stage}}{{stage}}.{{/if}}{{name}}</span>
-		{{/each}}
-		<div contenteditable id="addTag"></div>
+		<span {{#if color}} style="background-color: {{color}}"{{/if}}}{{{isTagSelected name}}} unselectable="on">{{name}}</span>{{/each}}<div contenteditable id="addTag"></div>
 	</div>
 </template>
 
@@ -119,15 +123,15 @@
 
 <template name="say">
 	<textarea {{{searchMode}}} id="say"/>
+	<textarea id="todo"/>
 </template>
 <template name="loadingTemplate">
-<img id="loading" src="../loading.gif"/>
+	<img id="loading" src="../loading.gif"/>
 </template>
 <template name="tools">
 	<div id="tools">
 		<a href="{{pathFor 'home'}}"><img selectStart=1 selectEnd=1 alt="Поиск" text="" src="../home.png"/></a>
 		<img id="search" selectStart=1 selectEnd=1 alt="Поиск" text="" src="../search.png"/>
-		<img id="clear" selectStart=1 selectEnd=1 alt="Стереть" text="" src="../delete.png"/>
 		<a href="{{pathFor 'clients'}}"><img id="clientsIcon" src="../clients.png"/></a>
 		<a href="{{pathFor 'contacts'}}"><img id="contactsIcon" src="../contacts.png"/></a>		
 		<img selectStart=30 selectEnd=34 alt="Звонок" text="Осуществлен #звонок# клиенту #.....# на тему:. Результат:" src="../call.png"/>
@@ -136,7 +140,7 @@
 		<img selectStart=1 selectEnd=8 alt="Заметка" text="#Заметка# по клиенту #....# "src="../notes.png"/>
 		<img selectStart=12 selectEnd=17 alt="Напомнить" text="#Напомнить# когда о " src="../remind.png"/>
 		<img selectStart=1 selectEnd=9 alt="Делегировать" text="#Поручить# задачу" src="../delegate.png"/>
-		
+
 		<img selectStart=1 selectEnd=1 alt="В корзину" text="" src="../attachment.png"/>
 		<img id="bin" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../bin.png"/>
 		<img id="books" selectStart=1 selectEnd=1 alt="В корзину" text="" src="../thisMonth.png"/>
@@ -168,35 +172,35 @@
 			{{#each fields}}
 			<td contenteditable >{{{getKey ../this this.sys}}}</td>
 			{{/each}}
-		<tr>
-		{{/each}}
-	</table>
-</template>
+			<tr>
+				{{/each}}
+			</table>
+		</template>
 
 
-<template name="contacts">
-<table id="myContacts">
-		<thead>
-			<th>Клиент</th>
-			{{#each fields}}
-			<th>{{this.caption}}</th>
-			{{/each}}
-		</thead>
-		{{#each contact}}
-		<tr id='{{this._id}}'>
-			<td>{{this.client_name}}</td>
-			{{#each fields}}
-			<td contenteditable >{{{getKey ../this this.sys}}}</td>
-			{{/each}}
-		<tr>
-		{{/each}}
-	</table>
-	
-</template>
+		<template name="contacts">
+			<table id="myContacts">
+				<thead>
+					<th>Клиент</th>
+					{{#each fields}}
+					<th>{{this.caption}}</th>
+					{{/each}}
+				</thead>
+				{{#each contact}}
+				<tr id='{{this._id}}'>
+					<td><a href="/client/{{this.client_id}}">{{this.client_name}}</a></td>
+					{{#each fields}}
+					<td contenteditable >{{{getKey ../this this.sys}}}</td>
+					{{/each}}
+					<tr>
+						{{/each}}
+					</table>
 
-<template name="contact">
-</template>
+				</template>
 
-<template name="header">
-	<h2>{{where}}</h2>
-</template>
+				<template name="contact">
+				</template>
+
+				<template name="header">
+					<h2>{{where}}</h2>
+				</template>

@@ -69,11 +69,22 @@ Meteor.methods({
 	init: function(){
 		Phrases.remove({});
 		Clients.remove({});
-	//	Tags.remove({});
+		Tags.remove({});
 		Contacts.remove({});
+		_.each(clientTemplate.projectStages, function(e,i){
+			Tags.insert({name:e.name, stage: e.stage,color: e.color});
+		})
 	},
 	addClient: function(workName){
-		c_id=Clients.insert({workName: workName, owner: this.userId});
+		client={};
+		client.workName=workName;
+		client.owner=this.userId;
+		clientTemplate.fields.forEach(function(e){
+				if (e.default){
+					client[e.sys]=e.default;
+				}
+			});
+		c_id=Clients.insert(client);
 		clientTemplate.requiredPositions.forEach(function(p,i){
 			contact={};
 			contactTemplate.fields.forEach(function(e){
@@ -93,6 +104,7 @@ Meteor.methods({
 		phrase.owner=this.userId;
 		phrase.name=text;
 		phrase.added=Date.now();
+		phrase.addedText=moment().format('DD.mm.YY');
 		phrase.date=dt.date.toLocaleString();
 		phrase.tags=[];
 		if (client_id!=null){
@@ -106,5 +118,10 @@ Meteor.methods({
 		o[data.field]=data.value;
 		Contacts.update(data.id,{$set : o});
 		//Contacts.update({_id:obj.id},{obj.field : obj.value });
+	},
+	updateClient: function(data){
+		o={};
+		o[data.field]=data.value;
+		Clients.update(data.id,{$set : o});
 	}
 });

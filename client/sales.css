@@ -1,9 +1,12 @@
 #layout {
 	width: 100%;
 }
-#say{
+#say, #todo{
 	width: 100%;
 	margin: 0px;
+}
+#todo {
+	display: none;
 }
 body{
 	margin: 10px;
@@ -37,9 +40,15 @@ body{
 	height: 400px;
 	overflow-y: scroll;
 }
+#phrases div a {
+	text-decoration: none;
+}
+#phrases div span {
+	white-space: pre-wrap;
+}
 #phrases div {
 	border-bottom: 1px solid #AAA;
-	white-space: pre-wrap;
+	white-space: nowrap;
 	cursor: default;
 }
 #phrases div:hover {
@@ -77,7 +86,7 @@ body{
 #tags span, #addTag, .tag{
 	display: inline;
 	background-color: #4E9;
-	padding:0px 14px 0px 4px;
+	padding:0px 4px 0px 4px;
 	color: white;
 	font-weight: 500;
 	font-size: 12px;
@@ -89,16 +98,11 @@ body{
 
 }
 .tagged{
-	background-color: #666 !important;
+	background-color: black !important;
+	color: white;
 }
-#gaddTag:after {
-	content: "";
-	width: 20px;
-	margin-left: 3px;
-	background-color: #4E9;
-	background-image: url(remove.png);
-	background-repeat: no-repeat;
-	background-position: right;
+#addTag:after {
+	content: "+";
 }
 .search{
 	background-color: yellow;
@@ -152,4 +156,18 @@ body{
 	position: absolute;
 	top: 0px;
 	left:0px;
+}
+#fields span {
+	width: 200px;
+	display: inline-block;
+}
+#fields span:nth-child(3n+1){
+	background-color: white;
+	padding: 2px;
+
+}
+#fields span:nth-child(3n+2){
+	background-color: #EEE;
+	padding: 2px;
+	text-align: center;
 }

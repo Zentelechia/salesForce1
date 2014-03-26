@@ -86,7 +86,7 @@ Template.tags.events({
 		//console.log(Session.get("tags"));
 	}, 
 	'selectstart span': function(event){
-		return false;
+	//	return false;
 	},
 
 	'focusout #addTag' : function(){
@@ -131,17 +131,17 @@ Template.clients.rendered=function(){
 Template.clients.client=function(){
 	return  getClients(Session.get("query"));
 };
-Template.clientsHistory.list=function(){
-	return  Session.get("clientsHistory");
+Template.history.list=function(){
+	return  Session.get("history");
 };
 
 Template.clients.events({
 	'click .clients div' : function() {
 		cid=$(event.currentTarget)[0].id;
-		a=Session.get("clientsHistory")||[];
+		a=Session.get("history")||[];
 		if (a.length=3) {a.shift();}
 		a.push(Clients.findOne({_id: cid}).workName);
-		Session.set("clientsHistory",a);
+		Session.set("history",a);
 		
 		Router.go('client',{id : cid});
 
@@ -150,10 +150,22 @@ Template.clients.events({
 
 
 Template.client.client=function(){
-	return Clients.findOne({_id : Session.get("clientID")});
+	return Clients.findOne(Session.get("clientID"));
 }
+Template.client.fields=clientTemplate.fields;
+Template.client.events({
+	'focusout span' : function(e){
 
-
+		self=$(e.target);
+		data={};
+		data.id=Session.get("clientID");
+		data.field=self.attr('sys');
+		data.value=self.html()
+		console.log(data);
+		Meteor.call("updateClient", data);
+		return false;
+	}
+});
 Template.phrases.events({
 	'click #phrases div': function(event){
 		id=$(event.currentTarget)[0].id;
@@ -167,16 +179,28 @@ Template.phrases.events({
 });
 
 Template.say.events({
+	'keydown #say': function(e) {
+		if(e.which == 9){
+			$('#todo').show();
+		}
+	},
+	'keydown #todo': function(e) {
+		if(e.which == 9){
+			$('#todo').clone();
+			$('#todo').show();	
+		}
+	},
 	'keyup #say': function(e) {
 		say=$(e.currentTarget).val();
+		say=say.substr(0,say.length-2); //remove 2 enters
 		if(e.which == 13){
 			if (Session.equals("enter",1)){
 				if (Router.current().route.name=="clients")				{
-					Meteor.call('addClient',$("#say").val());
+					Meteor.call('addClient',say);
 					$("#say").val("");
 				}
 				else{
-					Meteor.call("addPhrase", say.replace("\n\n",""),Session.get("clientID"));
+					Meteor.call("addPhrase",say, Session.get("clientID"));
 					$("#say").val("");
 /*					
 					function(er,id){
@@ -295,7 +319,14 @@ Template.calendar.rendered=function(){
 }
 Template.calendar.events({
 	'click span' : function(event){
-		Session.set("date",$(event.currentTarget).attr('data'))
+		now=Router.current();
+		params=now.params;
+		params.hash=$(event.currentTarget).attr('data');
+		console.log(params);
+		console.log(now.where);
+
+		Router.go(now.where,params);
+//		Session.set("date",)
 	}
 });
 
@@ -351,3 +382,15 @@ Handlebars.registerHelper('getFirstObjectPropertyValue', function(obj) {
 		obj[Object.keys(obj)[0]]
 		);
 });	
+
+Handlebars.registerHelper('clientProperty', function(sys){
+	client=Clients.findOne(Session.get("clientID"));
+	if (client[sys]){
+	return new Handlebars.SafeString(
+			client[sys]
+		);
+}
+else {
+	return "";
+}
+});
