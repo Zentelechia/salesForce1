@@ -3,7 +3,7 @@ var q={};
 function getHistory(client_id,tags,query){
 	q={};
 	if (client_id){
-		q.clientID=client_id;
+		q.client_id=client_id;
 	}
 	if (tags){
 		q.tags={$all : tags};
@@ -21,6 +21,9 @@ function getClients(query){
 	}
 	return Clients.find(q,{sort: {workName: 1}});
 }
+function getClient(){
+	return Clients.findOne(Session.get("client_id"));
+}
 function getContacts(query){
 	q={};
 	q.fio={$ne : ""};
@@ -34,48 +37,85 @@ function actionsCount(date){
 	//Phrases.find(/*Session.get("q")||{}*/).count()
 }
 
-
-Template.tags.tags=function(){
-	return Tags.find({},{sort: {stage : 1}});
-};
-
-Template.contacts.contact=function(){
-	return getContacts(Session.get("query"));
-};
-Template.contacts.fields=contactTemplate.fields;
-Template.contacts.events({
-	'focusout td' : function(e){
-		self=$(e.target);
-		data={};
-		data.id=self.parent().attr('id');
-		data.field=contactTemplate.fields[self.index()-1].sys;
-		data.value=self.html()
-		Meteor.call("updateContact", data);
-		return false;
+function searchClients(q){
+	return 
+}
+Template.global.client=function(q){
+	q=Session.get("query");
+	if (q){
+		return Clients.find({workName : {$regex : q, $options: 'i'}},{sort: {workName: 1}});
 	}
-});
-
-Template.clientContacts.fields=contactTemplate.fields;
-Template.clientContacts.contact=function(){
-	return Contacts.find({client_id : Session.get("clientID")});
-};
-Template.clientContacts.events({
-	'focusout td' : function(e){
-		self=$(e.target);
-		data={};
-		data.id=self.parent().attr('id');
-		data.field=contactTemplate.fields[self.index()].sys;
-		data.value=self.html()
-		Meteor.call("updateContact", data);
-		return false;
+		else {
+			return [];
+		}
 	}
-});
-Template.tags.events({
-	'click span': function(event){
-		$(event.currentTarget).toggleClass("tagged");
-		tags=Session.get("tags")||[]; 
-		if ($(event.currentTarget).is(".tagged")){
-			tags.push($(event.currentTarget).text());
+
+	Template.global.contact=function(){
+		q=Session.get("query");
+		if (q){
+			return Contacts.find({fio : {$regex : q, $options: 'i'}});
+		}
+		else{
+			return [];
+		}
+	}
+	Template.global.q=function(){
+		return Session.get("query")||"";
+	}
+	Template.global.phrase=function(){
+		q=Session.get("query");
+		if (q){
+			return Phrases.find({name : {$regex :q, $options: 'i'}});
+		}
+		else{
+			return [];
+		}
+
+	}
+	Template.tags.tags=function(){
+		return Tags.find({},{sort: {stage : 1}});
+	};
+
+	Template.contacts.contact=function(){
+		return getContacts(Session.get("query"));
+	};
+	Template.contacts.fields=contactTemplate.fields;
+	Template.contacts.events({
+		'focusout td' : function(e){
+			self=$(e.target);
+			data={};
+			data.id=self.parent().attr('id');
+			data.field=contactTemplate.fields[self.index()-1].sys;
+			data.value=self.html()
+			Meteor.call("updateContact", data);
+			return false;
+		}
+	});
+
+	Template.clientContacts.fields=contactTemplate.fields;
+	Template.clientContacts.contact=function(){
+		return Contacts.find({client_id : Session.get("client_id")});
+	};
+	Template.clientContacts.client=function(){
+		return Clients.find(Session.get("client_id"));
+	};
+	Template.clientContacts.events({
+		'focusout td' : function(e){
+			self=$(e.target);
+			data={};
+			data.id=self.parent().attr('id');
+			data.field=contactTemplate.fields[self.index()].sys;
+			data.value=self.html()
+			Meteor.call("updateContact", data);
+			return false;
+		}
+	});
+	Template.tags.events({
+		'click span': function(event){
+			$(event.currentTarget).toggleClass("tagged");
+			tags=Session.get("tags")||[]; 
+			if ($(event.currentTarget).is(".tagged")){
+				tags.push($(event.currentTarget).text());
 			//console.log("pushed");
 		}
 		else{
@@ -87,111 +127,112 @@ Template.tags.events({
 	}, 
 	'selectstart span': function(event){
 	//	return false;
-	},
+},
 
-	'focusout #addTag' : function(){
-		if ($("#addTag").text().replace(/(\.\s)/g,"")){
-			Meteor.call("addTag",$("#addTag").text());
-			$("#addTag").text("");
-		}
+'focusout #addTag' : function(){
+	if ($("#addTag").text().replace(/(\.\s)/g,"")){
+		Meteor.call("addTag",$("#addTag").text());
+		$("#addTag").text("");
 	}
+}
 });
-Template.tags.rendered=function(){
-	$("#tags span").draggable({ 
-		helper: "clone"
-	});
-};
+	Template.tags.rendered=function(){
+		$("#tags span").draggable({ 
+			helper: "clone"
+		});
+	};
 
-Template.phrases.rendered=function(){
-	$("#phrases div").droppable({
-		drop: function( event, ui ) {
-			if (ui.draggable.parent().is("#tags")){
-				Meteor.apply("applyTag",[$(this).attr("id"),$(ui.draggable).text()]);
+	Template.phrases.rendered=function(){
+		$("#phrases div").droppable({
+			drop: function( event, ui ) {
+				if (ui.draggable.parent().is("#tags")){
+					Meteor.apply("applyTag",[$(this).attr("id"),$(ui.draggable).text()]);
+				}
 			}
+		});
+		$("#phrases div").draggable({
+			helper: function() {return $("#target").clone()},
+			revert: true,
+			cursorAt:  { left: 16, bottom: 16 }
+		});
+
+	};
+	Template.phrases.phrase=function(){
+		return getHistory(Session.get("client_id"), Session.get("tags"), Session.get("query"));
+	};
+	Template.header.where=function(){
+		return Session.get("where");
+	}
+	Template.clients.rendered=function(){
+		$("#clients").autocomplete({source : Clients.find().fetch()});
+	};
+
+
+	Template.clients.client=function(){
+		return  getClients(Session.get("query"));
+	};
+	Template.history.list=function(){
+		return  Session.get("history");
+	};
+
+	Template.clients.events({
+		'click .clients div' : function() {
+			cid=$(event.currentTarget)[0].id;
+			a=Session.get("history")||[];
+			if (a.length=3) {a.shift();}
+			a.push(Clients.findOne({_id: cid}).workName);
+			Session.set("history",a);
+
+			Router.go('client',{id : cid});
+
 		}
 	});
-	$("#phrases div").draggable({
-		helper: function() {return $("#target").clone()},
-		revert: true,
-		cursorAt:  { left: 16, bottom: 16 }
+
+
+	Template.client.client=function(){
+		return Clients.find(Session.get("client_id"));
+	}
+
+	Template.client.fields=clientTemplate.fields;
+	Template.client.events({
+		'focusout span' : function(e){
+
+			self=$(e.target);
+			data={};
+			data.id=Session.get("client_id");
+			data.field=self.attr('sys');
+			data.value=self.html()
+			console.log(data);
+			Meteor.call("updateClient", data);
+			return false;
+		}
+	});
+	Template.phrases.events({
+		'click #phrases div': function(event){
+			id=$(event.currentTarget)[0].id;
+			$("#say").val(Phrases.findOne({_id : id}).name);
+		},
+		'click .tag': function(){
+			tags=Session.get("tags")||[];
+			tags.push($(event.currentTarget).text());
+			Session.set("tags",tags.unique());
+		}
 	});
 
-};
-Template.phrases.phrase=function(){
-	return getHistory(Session.get("clientID"), Session.get("tags"), Session.get("query"));
-};
-Template.header.where=function(){
-	return Session.get("where");
-}
-Template.clients.rendered=function(){
-	$("#clients").autocomplete({source : Clients.find().fetch()});
-};
-
-
-Template.clients.client=function(){
-	return  getClients(Session.get("query"));
-};
-Template.history.list=function(){
-	return  Session.get("history");
-};
-
-Template.clients.events({
-	'click .clients div' : function() {
-		cid=$(event.currentTarget)[0].id;
-		a=Session.get("history")||[];
-		if (a.length=3) {a.shift();}
-		a.push(Clients.findOne({_id: cid}).workName);
-		Session.set("history",a);
-		
-		Router.go('client',{id : cid});
-
-	}
-});
-
-
-Template.client.client=function(){
-	return Clients.findOne(Session.get("clientID"));
-}
-Template.client.fields=clientTemplate.fields;
-Template.client.events({
-	'focusout span' : function(e){
-
-		self=$(e.target);
-		data={};
-		data.id=Session.get("clientID");
-		data.field=self.attr('sys');
-		data.value=self.html()
-		console.log(data);
-		Meteor.call("updateClient", data);
-		return false;
-	}
-});
-Template.phrases.events({
-	'click #phrases div': function(event){
-		id=$(event.currentTarget)[0].id;
-		$("#say").val(Phrases.findOne({_id : id}).name);
-	},
-	'click .tag': function(){
-		tags=Session.get("tags")||[];
-		tags.push($(event.currentTarget).text());
-		Session.set("tags",tags.unique());
-	}
-});
-
-Template.say.events({
-	'keydown #say': function(e) {
-		if(e.which == 9){
-			$('#todo').show();
-		}
-	},
-	'keydown #todo': function(e) {
-		if(e.which == 9){
-			$('#todo').clone();
-			$('#todo').show();	
-		}
-	},
-	'keyup #say': function(e) {
-		say=$(e.currentTarget).val();
+	Template.say.events({
+		'keydown #say': function(e) {
+			if(e.which == 9){
+				$('#todo').show();
+			}
+		},
+		'keydown #todo': function(e) {
+			if(e.which == 9){
+				$('#todo').clone();
+				$('#todo').show();	
+			}
+		},
+		'keyup #say': function(e) {
+			say=$(e.currentTarget).val();
 		say=say.substr(0,say.length-2); //remove 2 enters
 		if(e.which == 13){
 			if (Session.equals("enter",1)){
@@ -200,7 +241,7 @@ Template.say.events({
 					$("#say").val("");
 				}
 				else{
-					Meteor.call("addPhrase",say, Session.get("clientID"));
+					Meteor.call("addPhrase",say, Session.get("client_id"));
 					$("#say").val("");
 /*					
 					function(er,id){
@@ -215,24 +256,24 @@ Template.say.events({
 							});
 						}
 					});
-*/					
-				}
-				Session.set("enter",0);
-			}else{
-				Session.set("enter",1);
-			}	
-		}else if (e.which == 32){
-			if (Session.equals("space",1)){
-			}else{
-				Session.set("space",1);
-			}	
-		}else if (Session.get("searchMode")){
-			Session.set("query",$("#say").val()||null);
-		}else{
-			Session.set("enter",0);
-			Session.set("space",0);
-		}
-	}
+	*/					
+}
+Session.set("enter",0);
+}else{
+	Session.set("enter",1);
+}	
+}else if (e.which == 32){
+	if (Session.equals("space",1)){
+	}else{
+		Session.set("space",1);
+	}	
+}else if (Session.get("searchMode")){
+	Session.set("query",$("#say").val()||null);
+}else{
+	Session.set("enter",0);
+	Session.set("space",0);
+}
+}
 });
 Template.fileUpload.events({
 	"change .file-upload-input": function(event, template){
@@ -327,7 +368,7 @@ Template.calendar.events({
 
 		Router.go(now.where,params);
 //		Session.set("date",)
-	}
+}
 });
 
 Handlebars.registerHelper('daySplitter', function(added) {
@@ -383,14 +424,18 @@ Handlebars.registerHelper('getFirstObjectPropertyValue', function(obj) {
 		);
 });	
 
-Handlebars.registerHelper('clientProperty', function(sys){
-	client=Clients.findOne(Session.get("clientID"));
+Handlebars.registerHelper('clientProperty', function(client, sys){
 	if (client[sys]){
-	return new Handlebars.SafeString(
+		return new Handlebars.SafeString(
 			client[sys]
-		);
-}
-else {
-	return "";
-}
+			);
+	}
+	else {
+		return "";
+	}
+});
+Handlebars.registerHelper('myPathFor', function(path,e){
+		return new Handlebars.SafeString(
+			Router.path(path,{id: e._id})
+			);
 });

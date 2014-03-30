@@ -1,20 +1,15 @@
 Router.configure({
 	layoutTemplate: 'layout',
-	loadingTemplate: 'loading',
-	waitOn: function(){
-		return [this.subscribe("clients"), this.subscribe("phrases"),this.subscribe("contacts")];
-
-	}
+	loadingTemplate: 'loading'	
 });
 init = function(){
 	Session.set("tags",null);
 	Session.set("previous",null);
-	Session.set("clientID",null);
+	Session.set("client_id",null);
 	Session.set("searchMode",null);
 	Session.set("query",null);
 	Session.set("enter",null);
 }
-
 Meteor.startup(function(){
 	Router.map(function (){
 		this.route('home', {
@@ -29,7 +24,7 @@ Meteor.startup(function(){
 			}
 		});
 		this.route('client', {
-			path: '/client/:id/:date?',
+			path: '/client/:id',
 			template: 'phrases',
 			yieldTemplates: {
 				'client': {to: 'sayBefore'},
@@ -37,9 +32,8 @@ Meteor.startup(function(){
 			},
 			before: function(){
 				init();
-				Session.set("clientID",this.params.id);
-				client=Clients.findOne(this.params.id);
-				Session.set("where","Клиент: "+client.workName);
+				Session.set("client_id",this.params.id);
+				Session.set("where","Клиент: ");
 				
 			}
 		});
@@ -50,7 +44,7 @@ Meteor.startup(function(){
 				init();
 				Session.set("where","Список клиентов");
 			}
-		}),
+		});
 		this.route('contacts', {
 			path: '/contacts',
 			template: 'contacts',
@@ -58,16 +52,41 @@ Meteor.startup(function(){
 				init();
 				Session.set("where","Список контактов");
 			}
-		}),
+		});
 		this.route('contact', {
 			path: '/contact/:id',
 			template: 'contact',
 			before : function(){
 				init();
-				contact=Contacts.findOne(this.params.id)
-				Session.set("where","Контактное лицо: "+contact.fio);
-				Session.set("contactID",this.params.id);
+				Session.set("where","Карточка котакта");
+				Session.set("contact_id",this.params.id);
 			}
 		});
+		this.route('tasks', {
+			path: '/tasks',
+			template: 'tasks',
+			before : function(){
+				init();
+				Session.set("where","Список задач");
+			}
+		});
+		this.route('task', {
+			path: '/task/:id',
+			template: 'task',
+			before : function(){
+				init();
+				Session.set("where","Задача: ");
+				Session.set("task_id",this.params.id);
+			}
+		});
+		this.route('global', {
+			path: '/global',
+			template: 'global',
+			before : function(){
+				Session.set("where","Сквозной поиск")
+			}
+			
+		});
+
 	});
 });

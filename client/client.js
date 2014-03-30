@@ -17,8 +17,21 @@ Meteor.startup(function () {
 		if(e.which == 27){
 			Session.set("tags",null);
 			Session.set("searchMode",null);
-			Session.set("query",null);
+			Session.set("query","");
 			$("#say").val("");
+		}
+	})
+	$(document).on('keypress',function(e){
+		
+		if ($(e.target).is('body')){
+			console.log(e);
+			q=Session.get("query")||"";
+			var unicode=e.charCode? e.charCode : e.keyCode;
+			var actualkey=String.fromCharCode(unicode);
+			Session.set("query",q+actualkey);
+			if (Router.current().template!="global"){
+				Router.go('global');
+			}
 		}
 	})
 	moment.lang("ru");
