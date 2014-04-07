@@ -1,0 +1,30 @@
+
+<template name="global">
+	<table width="100%">
+		<td colspan=3>{{q}}</td>
+		<thead>
+			<th width="33%">Клиенты</th>
+			<th width="33%">Контакты</th>
+			<th width="33%">Записи</th>
+		</thead>
+		<tr>
+
+		</tr>
+		<tr>
+			<td>
+				{{#each client}}
+				<a href="../client/{{_id}}">{{workName}}</a><br>
+				{{/each}}
+			</td>
+			<td>{{#each contact}}
+				<span id='{{this._id}}'>{{fio}}</span>
+				{{/each}}
+			</td>
+			<td>
+				{{#each phrase}}
+				<span id='{{this._id}}'>{{name}}</span>
+				{{/each}}
+			</td>
+		</tr>
+	</table>
+</template>

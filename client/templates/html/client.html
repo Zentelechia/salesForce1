@@ -1,0 +1,34 @@
+<template name="client">
+		<div id="tabs">
+			{{pathFor 'client'}}
+			{{pathFor 'clientContacts'}}
+			{{#each stage}}
+				{{patFor 'clientStageInfo'}}
+			{{/each }}
+		</div>
+</template>
+<template name="clientGeneralInfo">
+	<div id="fields">
+		{{#with client}}
+		{{#each fields}}
+		<span>{{caption}}</span><span sys="{{sys}}" contenteditable>{{{clientProperty .. sys}}}</span><br>
+		{{/each}}
+		{{/with}}
+	</div>
+</template>
+<template name="clientContacts">
+	<table id="contacts">
+		<thead>
+			{{#each fields}}
+			<th>{{this.caption}}</th>
+			{{/each}}
+		</thead>
+		{{#each contact}}
+		<tr id='{{this._id}}'>
+			{{#each fields}}
+			<td contenteditable >{{{getKey .. this.sys}}}</td>
+			{{/each}}
+		</tr>
+		{{/each}}
+	</table>
+</template>

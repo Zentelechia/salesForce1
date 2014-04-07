@@ -1,0 +1,11 @@
+<template name="calendar">
+	<div id="calendar">
+		{{#each cells}}
+		<div data="{{this.date}}" class="{{this.month}} cell" count={{this.c}}>
+			<div class="plan" style="height: {{this.plan}}%"></div>
+			<div class="fact" style="height: {{this.fact}}%; opacity: {{this.result}}"></div>
+			<div class="day">{{this.day}}</div>
+		</div>
+		{{/each}}
+	</div>
+</template>

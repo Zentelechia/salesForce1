@@ -1,0 +1,8 @@
+<template name="tags">
+	<div id="tags"><img id="colorpick" src="../colors.png"/>
+		{{#each tags}}
+			<span  style="background-color: {{color}}" class="{{classes}}" unselectable="on">{{name}}</span>
+		{{/each}}
+		<div contenteditable id="addTag"></div>
+	</div>
+</template>
