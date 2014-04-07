@@ -1,0 +1,18 @@
+<template name="phrases">
+	<div id="phrases">
+		{{#each phrase}}
+		{{{daySplitter added}}}
+		<div id="{{_id}}">{{addedText}}
+			{{#if client_name}}
+			<a href="../client/{{client_id}}">
+				{{client_name}}
+			</a>: 
+			{{/if}}
+			<span>{{name}}</span>	
+			{{#each tags}}
+			<span class="tag">{{this}}</span>
+			{{/each}}
+		</div>
+		{{/each}}
+	</div>
+</template>

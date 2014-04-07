@@ -1,0 +1,8 @@
+<template name="clients">
+	<input id="clients"/>
+	<div class="clients">
+		{{#each client}}
+		<div id="{{_id}}">{{workName}}</div>
+		{{/each}}
+	</div>
+</template>

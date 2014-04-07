@@ -1,0 +1,18 @@
+<template name="contacts">
+	<table id="myContacts">
+		<thead>
+			<th>Клиент</th>
+			{{#each fields}}
+			<th>{{this.caption}}</th>
+			{{/each}}
+		</thead>
+		{{#each contact}}
+		<tr id='{{this._id}}'>
+			<td><a href="/client/{{this.client_id}}">{{this.client_name}}</a></td>
+			{{#each fields}}
+			<td contenteditable >{{{getKey .. this.sys}}}</td>
+			{{/each}}
+		</tr>
+		{{/each}}
+	</table>
+</template>
