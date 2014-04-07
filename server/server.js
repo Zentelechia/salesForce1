@@ -3,17 +3,30 @@ Phrases=new Meteor.Collection("phrases");
 Clients=new Meteor.Collection("clients");
 Tags=new Meteor.Collection("tags");
 Contacts=new Meteor.Collection("contacts");
+Tasks=new Meteor.Collection("tasks");
+Reminders=new Meteor.Collection("reminders");
+Files=new Meteor.Collection("files");
+Roles=new Meteor.Collection("roles");
+Cases=new Meteor.Collection("cases");
+Knowledges=new Meteor.Collection("knowledges");
+Objections=new Meteor.Collection("objections");
 
 Meteor.publish("clients",function(){
-	if (this.userId) {
+	if (this.userId){
 		return Clients.find({owner: this.userId});
 	} else {   
 		this.ready();
 	}
 });
+Meteor.publish("taks",function(){
+	if (this.userId){
+		return Tasks.find({owner: this.userId});
+	} else {   
+		this.ready();
+	}
+});
 Meteor.publish("tags",function(){
-
-	if (this.userId) {
+	if (this.userId){
 		return Tags.find({$or: [{owner : this.userId}, {owner : null}]});
 	} else {   
 		this.ready();
@@ -22,27 +35,62 @@ Meteor.publish("tags",function(){
 });
 
 Meteor.publish("phrases",function(){
-	if (this.userId) {
+	if (this.userId){
 		return Phrases.find({owner: this.userId});
 	} else {   
 		this.ready();
 	}
-
-
 });
-
+	
 Meteor.publish("contacts",function(q){
-	if (this.userId) {
+	if (this.userId){
 		return Contacts.find();
 	} else {   
 		this.ready();
 	}
 });
-
+Meteor.publish("tasks",function(q){
+	if (this.userId){
+		return Tasks.find();
+	} else {   
+		this.ready();
+	}
+});Meteor.publish("files",function(q){
+	if (this.userId){
+		return Files.find();
+	} else {   
+		this.ready();
+	}
+});Meteor.publish("objections",function(q){
+	if (this.userId){
+		return Objections.find();
+	} else {   
+		this.ready();
+	}
+});Meteor.publish("reminders",function(q){
+	if (this.userId){
+		return Reminders.find();
+	} else {   
+		this.ready();
+	}
+});Meteor.publish("knowledges",function(q){
+	if (this.userId){
+		return Knowledges.find();
+	} else {   
+		this.ready();
+	}
+});
+Meteor.publish("cases",function(q){
+	if (this.userId){
+		return Cases.find();
+	} else {   
+		this.ready();
+	}
+});
 
 
 Meteor.methods({
-	'file-upload': function (fileInfo, fileData) {
+	'file-upload': function (fileInfo, fileData){
 		console.log("received file " + fileInfo.name + " data: " + fileData);
 		fs.writeFile("uploads\\"+fileInfo.name, fileData);
 	},
@@ -104,11 +152,11 @@ Meteor.methods({
 		phrase.owner=this.userId;
 		phrase.name=text;
 		phrase.added=Date.now();
-		phrase.addedText=moment().format('DD.mm.YY');
+		phrase.addedText=moment().format('DD.MM.YY');
 		phrase.date=dt.date.toLocaleString();
 		phrase.tags=[];
 		if (client_id!=null){
-			phrase.clientID=client_id;
+			phrase.client_id=client_id;
 			phrase.client_name =Clients.findOne(client_id).workName;
 		}
 		Phrases.insert(phrase);
