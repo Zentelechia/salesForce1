@@ -1,6 +1,6 @@
 
 <template name="layout">
-	{{loginButtons}}
+	{{> loginButtons}}
 	<table id="layout">
 		<tr>
 			<td>
@@ -18,21 +18,22 @@
 		</tr>
 		<tr>
 			<td colspan="2">
-				{{yield 'sayBefore'}}
+
+				{{> yield 'sayBefore'}}
 				{{> say}}
-				{{yield 'sayAfter'}}
+				{{> yield 'sayAfter'}}
 			</td>
 		</tr>
 		<tr>
 			<td>
-				{{yield 'tags'}}
+				{{> yield 'tags'}}
 			</td>
 		</tr>
 		<tr>
 			<td colspan="2">
-				{{yield 'dataBefore'}}
-				{{yield}}
-				{{yield 'dataAfter'}}
+				{{> yield 'dataBefore'}}
+				{{> yield}}
+				{{> yield 'dataAfter'}}
 			</td>
 		</tr>
 	</table>
@@ -44,10 +45,6 @@
 </template>
 
 <template name="say">
-	<textarea class="{{searchMode}}" id="say"></textarea>
+	<textarea id="say"></textarea>
 	<textarea id="todo"></textarea>
-</template>
-
-<template name="loadingTemplate">
-	<img id="loading" src="../loading.gif"/>
 </template>

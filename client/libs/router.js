@@ -18,7 +18,7 @@ Meteor.startup(function(){
 			yieldTemplates: {
 				'tags' : {to: 'tags'}
 			},
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Все записи");
 			}
@@ -27,10 +27,10 @@ Meteor.startup(function(){
 			path: '/client/:id',
 			template: 'phrases',
 			yieldTemplates: {
-				'client': {to: 'sayBefore'},
+				'client': {to: 'sayonBeforeAction'},
 				'tags' : {to: 'tags'}
 			},
-			before: function(){
+			onBeforeAction: function(){
 				init();
 				Session.set("client_id",this.params.id);
 				Session.set("where","Клиент: ");
@@ -41,10 +41,10 @@ Meteor.startup(function(){
 			path: '/client/:id',
 			template: 'phrases',
 			yieldTemplates: {
-				'clientGeneralInfo': {to: 'sayBefore'},
+				'clientGeneralInfo': {to: 'sayonBeforeAction'},
 				'tags' : {to: 'tags'}
 			},
-			before: function(){
+			onBeforeAction: function(){
 				init();
 				Session.set("client_id",this.params.id);
 				Session.set("where","Клиент: ");
@@ -55,10 +55,10 @@ Meteor.startup(function(){
 			path: '/client/:id/contacts',
 			template: 'phrases',
 			yieldTemplates: {
-				'clientContacts': {to: 'sayBefore'},
+				'clientContacts': {to: 'sayonBeforeAction'},
 				'tags' : {to: 'tags'}
 			},
-			before: function(){
+			onBeforeAction: function(){
 				init();
 				Session.set("client_id",this.params.id);
 				Session.set("where","Клиент: ");
@@ -68,7 +68,7 @@ Meteor.startup(function(){
 		this.route('clients', {
 			path: '/clients',
 			template: 'clients',
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Список клиентов");
 			}
@@ -76,7 +76,7 @@ Meteor.startup(function(){
 		this.route('contacts', {
 			path: '/contacts',
 			template: 'contacts',
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Список контактов");
 			}
@@ -84,7 +84,7 @@ Meteor.startup(function(){
 		this.route('contact', {
 			path: '/contact/:id',
 			template: 'contact',
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Карточка котакта");
 				Session.set("contact_id",this.params.id);
@@ -93,7 +93,7 @@ Meteor.startup(function(){
 		this.route('tasks', {
 			path: '/tasks',
 			template: 'tasks',
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Список задач");
 			}
@@ -101,7 +101,7 @@ Meteor.startup(function(){
 		this.route('task', {
 			path: '/task/:id',
 			template: 'task',
-			before : function(){
+			onBeforeAction : function(){
 				init();
 				Session.set("where","Задача: ");
 				Session.set("task_id",this.params.id);
@@ -110,7 +110,7 @@ Meteor.startup(function(){
 		this.route('global', {
 			path: '/global',
 			template: 'global',
-			before : function(){
+			onBeforeAction : function(){
 				Session.set("where","Сквозной поиск")
 			}
 			
