@@ -1,0 +1,7 @@
+<template name="tasks">
+<div id="tasks">
+	{{#each tasks}}
+	<div id="{{this._id}}">{{this.duedate}}{{this.name}}</div>
+	{{/each}}
+</div>
+</template>

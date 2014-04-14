@@ -1,0 +1,57 @@
+Phrases
+	name
+	owner
+	added
+	?client_id client_name
+	?contact_id contact_name
+	?reminders[]
+	?tasks[]
+	tags[]
+	?files[]
+Clients
+	workName
+	added
+	?legal
+	state
+	owner
+Tags
+	owner
+	name
+	where: [phrases,clients,contacts,tasks]
+	?color
+Contacts
+	owner
+	client_id
+	client_name
+	fio
+	?position
+	?required
+	?emails
+	?phones
+	?comments
+	?zone
+	?birthday
+Tasks
+	owner
+	?client_id client_name
+	?contact_id contact_fio
+	?phrase_id
+	added
+	?done
+	?dueDate
+	?priority
+Reminders
+	owner
+	text
+	when	
+Files
+	?client_id client_name
+	?cont
+	  mact_id contact_fio
+	?task_id
+	?phrase_id
+
+Roles
+Возражения
+Бизнескейсы
+База знаний
