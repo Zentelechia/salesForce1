@@ -9,8 +9,8 @@ Template.calendar.cells=function(){
 		cell.date=cd.format("DD.MM.YY");
 		cell.month=cd.month()==moment().month()?"current":cd.month()>moment().month()?"next":"previous";
 		cell.c=actionsCount();
-		cell.plan=Math.round((Math.random()*10+5)/15*100);
-		cell.fact=cd<moment()?Math.round((Math.random()*10)/15*100):0;
+		cell.plan=Math.round(Tasks.find({duedate : cell.date, owner : Meteor.userId()}).count()/10*100); //Math.round((Math.random()*10+5)/15*100);
+		cell.fact=Math.round(Tasks.find({done: true, duedate : cell.date, owner : Meteor.userId()}).count()/10*100);
 		cell.result=0.5+cell.fact/cell.plan/2;
 		cells.push(cell);
 		cell=[];
@@ -29,15 +29,11 @@ Template.calendar.rendered=function(){
 
 }
 Template.calendar.events({
-	'click span' : function(event){
-		now=Router.current();
-		params=now.params;
-		params.hash=$(event.currentTarget).attr('data');
-		console.log(params);
-		console.log(now.where);
-
-		Router.go(now.where,params);
-//		Session.set("date",)
-}
+	'click .cell' : function(event){
+		window.location.hash=$(event.currentTarget).attr('data');
+	},
+	'dblclick .cell' : function(event){
+		Router.go("tasks#"+$(event.currentTarget).attr('data'));
+	}
 });
 

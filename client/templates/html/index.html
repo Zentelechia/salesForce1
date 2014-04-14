@@ -1,50 +1,58 @@
 
+<head>
+	<title>Ведение продаж v0.1</title>
+</head>
 <template name="layout">
-	{{> loginButtons}}
-	<table id="layout">
+	<table id="layout" class="skelet">
 		<tr>
-			<td>
-				{{> header}}
-				{{> history}}
+			<td id="left">
+				{{> leftSide}}
 			</td>
-			<td rowspan="3">
-				{{> calendar}}
+			<td id="right">
+				{{> mainContainer}}
 			</td>
 		</tr>
-		<tr>	
-			<td>
-				{{> tools}}
-			</td>
-		</tr>
-		<tr>
-			<td colspan="2">
+	</table>  			
+</template>
 
-				{{> yield 'sayBefore'}}
-				{{> say}}
-				{{> yield 'sayAfter'}}
-			</td>
-		</tr>
-		<tr>
-			<td>
-				{{> yield 'tags'}}
-			</td>
-		</tr>
+<template name="leftSide">
+	<div id="leftSide">
+		{{loginButtons}}
+		{{> calendar}}
+		{{> menu}}  
+	</div>
+</template>
+
+<template name="searchBox">
+<div id="inputs">
+	<textarea rows=1 id="search"></textarea>
+	<textarea rows=1 id="todo"></textarea>
+
+</template>
+
+<template name="mainContainer">
+	<table class="skelet">
+		<tr class="header">
+			<td >
+				{{> history}}
+				{{> header}}
+				{{> searchBox}}
+			</tr>
 		<tr>
 			<td colspan="2">
-				{{> yield 'dataBefore'}}
-				{{> yield}}
-				{{> yield 'dataAfter'}}
+				<div id="main" class="skelet">
+					{{yield 'objectDetailes'}}
+					{{> tags}}
+					{{yield}}
+					{{yield 'summary'}}
+				</div>		
 			</td>
 		</tr>
 	</table>
-	<img id="target" style="display: none" src="../target.gif"/>
 </template>
 
 <template name="header">
 	<h2>{{where}}{{extra}}</h2>
 </template>
 
-<template name="say">
-	<textarea id="say"></textarea>
-	<textarea id="todo"></textarea>
-</template>
+

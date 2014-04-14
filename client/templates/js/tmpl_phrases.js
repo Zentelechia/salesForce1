@@ -1,3 +1,4 @@
+
 	Template.phrases.rendered=function(){
 		$("#phrases div").droppable({
 			drop: function( event, ui ) {
@@ -14,19 +15,13 @@
 
 	};
 	Template.phrases.phrase=function(){
-		return getHistory(Session.get("client_id"), Session.get("tags"), Session.get("query"));
+		return getHistory(Session.get("client_id"),Session.get("contact_id"),Session.get("task_id"), Session.get("tags"), Session.get("query"));
 	};
-
-
-
+	
 	Template.phrases.events({
 		'click #phrases div': function(event){
-			id=$(event.currentTarget)[0].id;
-			$("#say").val(Phrases.findOne({_id : id}).name);
-		},
-		'click .tag': function(){
-			tags=Session.get("tags")||[];
-			tags.push($(event.currentTarget).text());
-			Session.set("tags",tags.unique());
+			if (event.shiftKey){
+				Meteor.call("toBin",$(event.currentTarget).attr('id'));
+			}
 		}
 	});

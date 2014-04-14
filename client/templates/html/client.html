@@ -1,17 +1,33 @@
 <template name="client">
-		<div id="tabs">
-			{{pathFor 'client'}}
-			{{pathFor 'clientContacts'}}
-			{{#each stage}}
-				{{patFor 'clientStageInfo'}}
-			{{/each }}
+	<div class="tabs">
+	<div tab="info">Инфо</div>
+		<div tab="contacts"> Контакты</div>
+		<div tab="tasks">Задачи</div>
+		{{#each stages}}
+		<div tab="stage{{stage}}">{{name}}</div>
+		{{/each }}
+	</div>
+	<div class="tabsContent">
+		<div tab="info" class="selected">
+			{{> clientGeneralInfo}}
 		</div>
+		<div tab="contacts">
+			{{> clientContacts}}
+		</div>
+		{{#each stages}}
+		<div tab="stage{{stage}}">
+			{{#each this.tasks}}
+			<input type="checkbox">{{this}}</input><br>
+			{{/each}}
+		</div>
+		{{/each}}
+	</div>
 </template>
 <template name="clientGeneralInfo">
 	<div id="fields">
 		{{#with client}}
 		{{#each fields}}
-		<span>{{caption}}</span><span sys="{{sys}}" contenteditable>{{{clientProperty .. sys}}}</span><br>
+		<span>{{caption}}</span><span sys="{{sys}}" contenteditable>{{{clientProperty ../this this.sys}}}</span><br>
 		{{/each}}
 		{{/with}}
 	</div>

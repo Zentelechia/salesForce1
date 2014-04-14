@@ -1,10 +1,26 @@
 var previous;
 var q={};
+tagClicked=function(element){
+		$(event.currentTarget).toggleClass("tagged");
+		tags=Session.get("tags")||[]; 
+		if ($(element).is(".tagged")){
+			tags.push($(element).text());
+		}else{
+			tags.remove($(element).text());
+		}
+		Session.set("tags",tags.length?tags:null);
+}
 actionsCount=function (date){
 	return 5;
 	//Phrases.find(/*Session.get("q")||{}*/).count()
 }
-
+pushHistory=function(p,l){
+			a=Session.get("history")||[];
+			if (a.length>5) {a.shift();}
+			obj={p: path, l: link};
+			a.push(obj);
+			Session.set("history",a);
+}
 getHistory=function(client_id,contact_id,task_id,tags,query){
 	q={};
 	if (client_id){
@@ -22,6 +38,9 @@ getHistory=function(client_id,contact_id,task_id,tags,query){
 	if (query&&query.length){
 		q.name={$regex : query, $options: 'i'};
 	}
+	if (Session.get("bin")){
+		q.bin=true;
+	}
 	Session.set("q",q);
 	return Phrases.find(q,{sort: {added : -1}});
 }
@@ -29,6 +48,9 @@ getClients=function (query){
 	q={};
 	if (query){
 		q.workName={$regex : query, $options: 'i'};
+	}
+	if (Session.get("bin")){
+		q.bin=true;
 	}
 	return Clients.find(q,{sort: {workName: 1}});
 }
@@ -40,6 +62,9 @@ getContacts=function(query){
 	q.fio={$ne : ""};
 	if (query){
 		q["$or"]=[{fio :{$regex : query, $options: 'i'}}, {comments: {$regex : query, $options: 'i'}}];
+	}
+	if (Session.get("bin")){
+		q.bin=true;
 	}
 	return Contacts.find(q);
 }

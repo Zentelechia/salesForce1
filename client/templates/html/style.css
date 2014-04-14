@@ -1,5 +1,25 @@
+@font-face {
+	font-family: 'smt';
+	src: url(fonts/segoeui.ttf);
+}
+body, html {
+	padding: 0;
+	border: 0;
+	margin: 0;
+	height: 100%;
+	font-family: 'smt';
+}
+
 #layout {
 	width: 100%;
+	height: 100%;
+}
+
+#layout #left {
+	width: 200px;
+}
+#layout #right{
+	vertical-align: top;
 }
 #tools img {
 	width: 48px;
@@ -12,12 +32,6 @@
 #todo {
 	display: none;
 }
-body{
-	margin: 10px;
-	position: relative;
-	background: #EEE  url(bg.gif);
-	background-repeat: repeat;
-}
 #console{
 	text-align: center;
 	position: absolute;
@@ -27,22 +41,15 @@ body{
 	background-color: #CCC;
 }
 .current{
-		background-color: #999;
+	background-color: #999;
 }
 .previous,.next{
-		background-color: #CCC;
+	background-color: #CCC;
 }
 
-#calendar span{
-	text-align: center;
-	color: white;
-	font-size: 8px;
-	margin: 0px;
-}
 #phrases{
 	width: 100%;
 	height: 400px;
-	overflow-y: scroll;
 }
 #phrases div a {
 	text-decoration: none;
@@ -112,49 +119,47 @@ body{
 	background-color: yellow;
 }
 #calendar {
-	width: 140px;
-	height: 120px;
+	width: 200px;
 	margin: 0px;
-	padding: 0px;
+	padding: 3px;
 	overflow: hidden;
-	top: 0px;
-	right: 0px;
-	position: absolute;
 }
 #calendar .cell{
-	float: left;
-	margin: 0px;
+	background-color: #777;
 	display: inline-block;
-	width: 18px;
-	height: 18px;
-	border: 1px solid #EEE;
+	width: 20px;
+	height: 20px;
+	margin: 2px;
+	color:	#FFF;
+	text-align: center;
+	font-size: 10px;
+	vertical-align: middle;
 	overflow: hidden;
- 	color: black;
- 	cursor: pointer;
- 	position: relative;
+	cursor: pointer;
+	position: relative;
 }
 
 .plan, .fact, .day{
 	display: inline-block;
 	position: absolute;
 	bottom: 0;
+	left: 0;
 	width: 100%;
+	text-align: center;
 
 }
 .plan {
-	background-color: green;
+	background-color: #8ecb60;
 }
 .fact {
-	background-color: blue;
+	background-color: rgb(16, 160, 227);
 }
 .day {
 	color: #EEE;
 	font-size: 10px;
-	text-align: left;
-
 }
 .clients div {
- cursor: pointer;
+	cursor: pointer;
 }
 #loading {
 	position: absolute;
@@ -174,4 +179,92 @@ body{
 	background-color: #EEE;
 	padding: 2px;
 	text-align: center;
+}
+
+/* CSS declarations go here */
+
+#leftSide {
+	float: left;
+	width: 200px;
+	background-color: #4d5a75;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+.menuItem{	
+	border-bottom: 1px solid #5e6b86;	
+	padding: 15px;
+	padding-left: 20px;
+	color: white;
+}
+.menuItem:hover{
+	background-color: rgb(68, 79, 103);
+	border-left: 4px solid rgb(160, 182, 229);
+	cursor: pointer;
+}
+#inputs {
+	position: fixed;
+	top: 10px;
+	right: 10px;
+}
+#search, #todo {
+	width: 300px;
+	padding: 10px;
+	opacity: 0.5;
+	resize: none;
+}
+#todo {
+	top: 60px;
+}
+.skelet {
+	border-collapse: collapse;
+	border:0px;
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	height: 100%;
+}
+#main {
+	overflow: auto;
+}
+#searchTD{
+	height: 100px;
+}
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.header, .history {
+	height: 30px;
+}
+.tabs div {
+	display: inline-block;
+	margin: 0;
+	padding: 0;
+	padding-left: 5px;
+	padding-right: 5px;
+	margin-right: -4px;
+	color: white;
+}
+.tabs {
+	background-color: #4d5a75;
+}
+.tabs .selected {
+	background-color: #BBB;
+	color: rgb(68, 79, 103);
+}
+.tabs div:hover {
+	background-color: #DDD;
+	cursor: pointer;
+}
+
+.tabsContent div[tab]{
+	display: none;
+}
+#history a {
+	font-size: 11px;
 }

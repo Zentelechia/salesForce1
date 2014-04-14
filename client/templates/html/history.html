@@ -1,5 +1,7 @@
 <template name="history">
+	<div id="history">
 	{{#each list}}
-	{{this}}
+		<a href="{{this.p}}">{{this.l}}</a>
 	{{/each}}
+	</div>
 </template>

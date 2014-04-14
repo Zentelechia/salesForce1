@@ -1,3 +1,5 @@
+var previous;
+var q={};
 Handlebars.registerHelper('daySplitter', function(added) {
 	now=moment(added).format("dddd DD MMMM YYYY");
 	if (now==previous){
@@ -63,6 +65,7 @@ Handlebars.registerHelper('clientProperty', function(client, sys){
 });
 Handlebars.registerHelper('myPathFor', function(path,e){
 		return new Handlebars.SafeString(
-			Router.path(path,{id: e._id})
+			
+			"" //Router.path(path,{id: e._id})
 			);
 });

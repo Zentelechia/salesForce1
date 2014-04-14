@@ -3,21 +3,8 @@ Template.tags.tags=function(){
 };
 Template.tags.events({
 	'click span': function(event){
-		$(event.currentTarget).toggleClass("tagged");
-		tags=Session.get("tags")||[]; 
-		if ($(event.currentTarget).is(".tagged")){
-			tags.push($(event.currentTarget).text());
-			//console.log("pushed");
-		}else{
-			tags.remove($(event.currentTarget).text());
-			//console.log("removed");
-		}
-		Session.set("tags",tags.length?tags:null);
-		//console.log(Session.get("tags"));
+		tagClicked(event.currentTarget);
 	}, 
-	'selectstart span': function(event){
-	//	return false;
-},
 'focusout #addTag' : function(){
 	if ($("#addTag").text().replace(/(\.\s)/g,"")){
 		Meteor.call("addTag",$("#addTag").text());

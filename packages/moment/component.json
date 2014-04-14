@@ -40,6 +40,7 @@
     "lang/it.js",
     "lang/ja.js",
     "lang/ka.js",
+    "lang/km.js",
     "lang/ko.js",
     "lang/lb.js",
     "lang/lt.js",
@@ -70,7 +71,7 @@
     "lang/tzm.js",
     "lang/uk.js",
     "lang/uz.js",
-    "lang/vn.js",
+    "lang/vi.js",
     "lang/zh-cn.js",
     "lang/zh-tw.js"
   ],

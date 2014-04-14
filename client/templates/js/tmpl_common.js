@@ -1,3 +1,5 @@
+
+
 Template.header.where=function(){
 		return Session.get("where");
 	};
